@@ -28,11 +28,11 @@ export async function POST(request) {
     console.log("Upload data:", data);
 
     // Generate the public URL
-    const { publicUrl } = supabase.storage
+    const { data: urlData } = supabase.storage
       .from("Cloud App Uploads")
       .getPublicUrl(`public/${fileName}`);
 
-    console.log("publicUrl:", publicUrl);
+    const publicUrl = urlData?.publicUrl;
 
     return new Response(JSON.stringify({ url: publicUrl }), {
       status: 200,

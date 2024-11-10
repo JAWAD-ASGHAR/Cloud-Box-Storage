@@ -1,21 +1,42 @@
-import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
+import InnerFolderItem from "./InnerFolderItem";
+import Loading from "../Loading";
+import { useRouter } from "next/navigation";
 
-const InnerFolderList = ({ folder, active }) => {
+const InnerFolderList = ({ folderList, folderLoading }) => {
+  const router = useRouter();
+
+  const [activeFolderId, setActiveFolderId] = useState(null);
+
+  const handleFolderClick = (folder) => {
+    setActiveFolderId(folder.id);
+    router.push(`/folder/${folder.id}?name=${folder.name}`);
+  };
+
   return (
-    <div
-      className={`w-full flex items-center hover:shadow-sm ${
-        active ? "bg-gray-50" : ""
-      } hover:bg-gray-50 cursor-pointer p-3`}
-    >
-      <Image
-        width={30}
-        height={30}
-        src="/folder.png"
-        alt="folder icon"
-        className="mr-4"
-      />
-      <h2 className="line-clamp-2 text-sm">{folder.name}</h2>
+    <div className="p-5 mt-5 bg-white rounded-lg">
+      <div className="flex items-center justify-center">
+        <Loading
+          loading={folderLoading}
+          size="loading-md"
+          className="w-full my-10"
+        />
+      </div>
+      {!folderList.length && !folderLoading && (
+        <p className="text-center my-10 text-gray-500">No available folders</p>
+      )}
+      {folderList.length > 0 && (
+        <ul className="m-3">
+          {folderList.map((folder) => (
+            <li key={folder.id} onClick={() => handleFolderClick(folder)}>
+              <InnerFolderItem
+                folder={folder}
+                active={activeFolderId === folder.id}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

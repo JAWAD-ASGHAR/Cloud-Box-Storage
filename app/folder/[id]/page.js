@@ -13,35 +13,56 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import FolderItem from "@/Components/folder/FolderItem";
-import Loading from "@/Components/Loading";
 import { FolderRefreshContext } from "@/Context/FolderRefreshContext";
 import InnerFolderList from "@/Components/folder/InnerFolderList";
+import { FileRefreshContext } from "@/Context/FileRefreshContext";
+import FileList from "@/Components/file/FileList";
 
 const FolderDetails = ({ params }) => {
   const searchParams = useSearchParams();
-  const unwrappedParams = use(params);  // Unwrap the params promise
+  const unwrappedParams = use(params);
   const folderId = unwrappedParams.id;
   const folderName = searchParams.get("name");
   const [folderList, setFolderList] = useState([]);
   const { data: session, status } = useSession();
   const [folderLoading, setFolderLoading] = useState(true);
-  const [activeFolderId, setActiveFolderId] = useState(null);
   const { setParentFolderId } = useContext(ParentFolderIdContext);
   const { folderRefresh, setFolderRefresh } = useContext(FolderRefreshContext);
+  const [fileLoading, setFileLoading] = useState(true);
+  const { fileRefresh, setFileRefresh } = useContext(FileRefreshContext);
+  const [fileList, setFileList] = useState([]);
   const db = getFirestore(app);
 
-  const router = useRouter();
 
   useEffect(() => {
-    setFolderList([]);
-    setParentFolderId(folderId);
+    if (status === "unauthenticated") {
+      redirect("/login");
+    }
 
-    // Only fetch folders if authenticated
+    setParentFolderId(folderId);
+  }, [folderId, setParentFolderId, session]);
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      redirect("/login");
+    }
+
     if (status === "authenticated") {
+      setFolderList([]);
       getFolderList();
     }
-  }, [folderId, status, folderRefresh ]);
+  }, [folderId, folderRefresh, session]);
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      redirect("/login");
+    }
+
+    if (status === "authenticated") {
+      setFileList([]);
+      getFileList();
+    }
+  }, [folderId, fileRefresh, session]);
 
   const getFolderList = async () => {
     setFolderLoading(true);
@@ -70,43 +91,31 @@ const FolderDetails = ({ params }) => {
     }
   };
 
-  const handleFolderClick = (folder) => {
-    setActiveFolderId(folder.id);
-    router.push(`/folder/${folder.id}?name=${folder.name}`);
+  const getFileList = async () => {
+    setFileLoading(true);
+    try {
+      const q = query(
+        collection(db, "files"),
+        where("createdBy", "==", session.user.email),
+        where("parentFolderId", "==", folderId)
+      );
+      const querySnapshot = await getDocs(q);
+      const files = querySnapshot.docs.map((doc) => doc.data());
+      setFileList(files);
+    } catch (error) {
+      console.error("Error fetching files:", error);
+    } finally {
+      setFileLoading(false);
+    }
   };
 
   return (
     <div className="p-5 h-screen bg-slate-100">
       <SearchBar />
-      <h1 className="font-bold mt-5 m-3">{folderName}</h1>
-      <div className="p-5 mt-5 bg-white rounded-lg">
-        <div className="flex items-center justify-center">
-          <Loading
-            loading={folderLoading}
-            size="loading-md"
-            className="w-full my-10"
-          />
-        </div>
-        {!folderList.length && !folderLoading && (
-          <p className="text-center my-10 text-gray-500">
-            No available files or folders
-          </p>
-        )}
-        {folderList.length > 0 && (
-          <ul className="m-3">
-            {folderList.map((folder) => (
-              <li key={folder.id} onClick={() => handleFolderClick(folder)}>
-                <InnerFolderList
-                  folder={folder}
-                  active={activeFolderId === folder.id}
-                />
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      <h1 className="font-bold text-[20px] mt-5 m-3">{folderName}</h1>
+      <InnerFolderList folderList={folderList} folderLoading={folderLoading} />
+      <FileList fileList={fileList} loading={fileLoading} />
     </div>
-
   );
 };
 

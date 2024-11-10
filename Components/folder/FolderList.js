@@ -16,36 +16,42 @@ const FolderList = ({ folderList, loading }) => {
 
   return (
     <div className="p-5 mt-5 bg-white rounded-lg">
-  <h2 className="text-[17px] font-bold">
-    Recent Folders
-    <span className="hover:underline cursor-pointer float-right text-primary-400 font-normal text-sm">
-      View All
-    </span>
-  </h2>
+      <h2 className="text-[17px] font-bold">
+        Recent Folders
+        <span className="hover:underline cursor-pointer float-right text-primary-400 font-normal text-sm">
+          View All
+        </span>
+      </h2>
 
-  {/* Show loading indicator only when loading is true */}
-  {loading ? (
-    <div className="flex items-center justify-center mt-3 m-3">
-      <Loading loading={loading} size="loading-md" className="w-full my-10" />
-    </div>
-  ) : (
-    // Only show folder list or "No folders found" when not loading
-    <div className="grid grid-cols-2 mt-3 m-3 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-      {folderList.length > 0 ? (
-        folderList.map((folder) => (
-          <div key={folder.id} onClick={() => handleFolderClick(folder)}>
-            <FolderItem folder={folder} active={activeFolderId === folder.id} />
-          </div>
-        ))
+      {/* Show loading indicator only when loading is true */}
+      {loading ? (
+        <div className="flex items-center justify-center mt-3 m-3">
+          <Loading
+            loading={loading}
+            size="loading-md"
+            className="w-full my-10"
+          />
+        </div>
       ) : (
-        <p className="text-center my-5">No folders found</p>
+        <div>
+          {folderList.length > 0 ? (
+            <div className="grid grid-cols-2 mt-3 m-3 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              {folderList.map((folder) => (
+              <div key={folder.id} onClick={() => handleFolderClick(folder)}>
+                <FolderItem
+                  folder={folder}
+                  active={activeFolderId === folder.id}
+                />
+              </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-center my-10 text-gray-500">No folders found</p>
+          )}
+        </div>
       )}
     </div>
-  )}
-</div>
-
   );
-
 };
 
 export default FolderList;

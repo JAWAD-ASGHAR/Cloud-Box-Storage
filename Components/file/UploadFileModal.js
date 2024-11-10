@@ -1,18 +1,18 @@
-import { app } from "@/Config/FirebaseConfig";
 import { ParentFolderIdContext } from "@/Context/ParentFolderIdContext";
 import { doc, getFirestore, setDoc } from "firebase/firestore";
 import { useSession } from "next-auth/react";
 import React, { useContext, useState } from "react";
 import Toast from "../Toast";
+import { app } from "@/Config/FirebaseConfig";
+import { FileRefreshContext } from "@/Context/FileRefreshContext";
 
 const UploadFileModal = ({ isOpen, onClose }) => {
   const { data: session } = useSession();
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastMode, setToastMode] = useState("");
-  const { parentFolderId, setParentFolderId } = useContext(
-    ParentFolderIdContext
-  );
+  const { parentFolderId } = useContext(ParentFolderIdContext);
+  const { fileRefresh, setFileRefresh } = useContext(FileRefreshContext);
   const db = getFirestore(app);
   const docId = Date.now().toString();
 
@@ -34,22 +34,17 @@ const UploadFileModal = ({ isOpen, onClose }) => {
       });
       
       // Check if the response is successful
-      if (res.ok) {
-        const data = await res.json();
-        console.log("Uploaded file URL:", data); // This should display the public URL
-        if (data.url) {
-          console.log("File uploaded successfully. Public URL:", data.url);
-        } else {
-          console.error("Failed to retrieve the public URL");
-        }
-      } else {
+      if (!res.ok) {
         const error = await res.json();
-        console.error("Upload error:", error.error);
+        setToastMessage(`Upload error: ${error.error}`);
+        setToastMode("error");
+        setShowToast(true);
+        return;
       }
-      
-      
 
-      // 2. Save file metadata to Firestore
+      const data = await res.json();
+
+      // 2. Save file metadata to Firestore only if upload is successful
       await setDoc(doc(db, "files", docId), {
         name: file.name,
         type: file.name.split(".").pop(),
@@ -59,16 +54,16 @@ const UploadFileModal = ({ isOpen, onClose }) => {
         createdBy: session.user.email,
         createdDate: new Date(),
         parentFolderId,
-        imageUrl: "/folder.png",
+        imageUrl: data.url,
       });
 
       // 3. Show success message using toast
-      setToastMessage("File uploaded successfully!");
+      setFileRefresh(!fileRefresh);
+      setToastMessage("File uploaded and saved successfully!");
       setToastMode("success");
     } catch (error) {
       // Handle any errors in upload or Firestore save
-      console.error("Error uploading file:", error);
-      setToastMessage("Error uploading file!");
+      setToastMessage("Unexpected error occurred while uploading file!");
       setToastMode("error");
     } finally {
       setShowToast(true);
