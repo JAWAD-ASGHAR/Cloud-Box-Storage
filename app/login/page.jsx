@@ -1,16 +1,22 @@
 "use client";
 
+import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
-import { useState } from "react";
+import { redirect } from "next/navigation";
+import { useState , useEffect} from "react";
 
 const Page = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [isButtonHovered, setIsButtonHovered] = useState(false);
 
-  const handleSignIn = () => {
-    // Implement your sign in logic here
-    console.log("Sign in clicked");
-  };
+  const {data: session} = useSession();
+  
+
+  useEffect(() => {
+    if (session) {
+      redirect("/");
+    }
+  })
 
   return (
     <div className="relative h-screen w-full overflow-hidden">
@@ -51,7 +57,7 @@ const Page = () => {
             </p>
           </div>
           <button
-            onClick={handleSignIn}
+            onClick={() => signIn("google")}
             onMouseEnter={() => setIsButtonHovered(true)}
             onMouseLeave={() => setIsButtonHovered(false)}
             className="mt-8 w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-indigo-600 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg shadow-lg transition-transform transform "

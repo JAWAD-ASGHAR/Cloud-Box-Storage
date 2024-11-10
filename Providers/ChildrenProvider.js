@@ -1,29 +1,32 @@
-"use client"
+"use client";
 
 import SideNavBar from "@/Components/SideNavBar";
 import Storage from "@/Components/storage/Storage";
 import { useSession } from "next-auth/react";
 import React from "react";
 
-const ChildrenProvider = ({children}) => {
-    const {data: status} = useSession();
+const ChildrenProvider = ({ children }) => {
+  const { data: session, status } = useSession();
+
   return (
-    <div className="flex">
-      {status === "authenticated" && (
-        <React.Fragment>
+    <div className="flex w-full h-full">
+      {status === "authenticated" && session ? (
+        <>
           <SideNavBar />
           <div className="grid grid-cols-1 md:grid-cols-3 w-full">
-            <div className="col-span-2">{children}</div>
-            <div className="order-first md:order-last">
+            {/* Children container spanning two columns on medium screens and up */}
+            <div className="col-span-1 md:col-span-2">{children}</div>
+            {/* Storage container spanning one column */}
+            <div className="order-first md:order-last md:col-span-1">
               <Storage />
             </div>
           </div>
-        </React.Fragment>
+        </>
+      ) : (
+        status !== "loading" && children
       )}
-      {status !== "authenticated" && children}
     </div>
   );
 };
 
 export default ChildrenProvider;
-
