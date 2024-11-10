@@ -3,21 +3,20 @@
 import moment from "moment";
 import Image from "next/image";
 
-function FileItem({ file }) {
+function FileItem({ file, loadingId, delete: deleteFile }) {
   const image = "/" + file.type + ".png";
+  const isLoading = loadingId === file.id;
 
   return (
     <div
-      className="grid grid-cols-1
-    md:grid-cols-2 justify-between
-    cursor-pointer hover:bg-gray-100
-    p-3 rounded-md"
+      className={`grid grid-cols-1 md:grid-cols-2 justify-between p-3 rounded-md 
+        ${isLoading ? "bg-gray-200 cursor-not-allowed opacity-50" : "hover:bg-gray-100 cursor-pointer"}`}
     >
       <div className="flex gap-2 items-center">
         <Image src={image} alt="file-icon" width={26} height={20} />
         <h2
-          className="text-[15px] truncate hover:underline hover:text-primary-400"
-          onClick={() => window.open(file.imageUrl)}
+          className={`text-[15px] truncate ${!isLoading && "hover:underline hover:text-primary-400"}`}
+          onClick={() => !isLoading && window.open(file.imageUrl)}
         >
           {file.name}
         </h2>
@@ -29,12 +28,14 @@ function FileItem({ file }) {
         <h2 className="text-[15px]">
           {(file.size / 1024 ** 2).toFixed(2) + " MB"}
           <svg
+            onClick={() => !isLoading && deleteFile(file)}
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="w-5 h-5 float-right text-red-500 hover:scale-110 transition-all"
+            className={`w-5 h-5 float-right text-red-500 transition-all 
+              ${!isLoading ? "hover:scale-110 cursor-pointer" : "cursor-not-allowed"}`}
           >
             <path
               strokeLinecap="round"
@@ -49,3 +50,4 @@ function FileItem({ file }) {
 }
 
 export default FileItem;
+

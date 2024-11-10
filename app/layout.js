@@ -4,6 +4,7 @@ import SideNavBar from "../Components/SideNavBar";
 import ParentFolderIdContextWrapper from "@/Providers/ParentFolderIdContextWrapper";
 import FolderRefreshContextWrapper from "@/Providers/FolderRefreshContextWrapper";
 import FileRefreshContextWrapper from "@/Providers/FileRefreshContextWrapper";
+import Storage from "@/Components/storage/Storage";
 
 export const metadata = {
   title: "Cloud Box",
@@ -22,7 +23,9 @@ export default function RootLayout({ children }) {
                 <SideNavBar />
                 <div className="grid grid-cols-1 md:grid-cols-3 w-full">
                   <div className="col-span-2">{children}</div>
-                  <div>Storage</div>
+                  <div className="order-first md:order-last">
+                    <Storage />
+                  </div>
                 </div>
               </div>
               </FileRefreshContextWrapper>

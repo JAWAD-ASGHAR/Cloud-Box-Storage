@@ -6,12 +6,15 @@ import Toast from "../Toast";
 import { ParentFolderIdContext } from "@/Context/ParentFolderIdContext";
 import { FolderRefreshContext } from "@/Context/FolderRefreshContext";
 
-const CreateFolderModal = ({ isOpen, onClose, onCreate }) => {
+const CreateFolderModal = ({ isOpen, onClose }) => {
   const [folderName, setFolderName] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastMode, setToastMode] = useState("");
-  const { parentFolderId, setParentFolderId } = useContext(ParentFolderIdContext);
+  const [isLoading, setIsLoading] = useState(false);
+  const { parentFolderId, setParentFolderId } = useContext(
+    ParentFolderIdContext
+  );
   const docId = Date.now().toString();
   const { data: session } = useSession();
   const { folderRefresh, setFolderRefresh } = useContext(FolderRefreshContext);
@@ -21,6 +24,7 @@ const CreateFolderModal = ({ isOpen, onClose, onCreate }) => {
       onClose();
       return;
     }
+    setIsLoading(true);
     await setDoc(doc(db, "folders", docId), {
       name: folderName,
       id: docId,
@@ -28,29 +32,33 @@ const CreateFolderModal = ({ isOpen, onClose, onCreate }) => {
       createdDate: new Date(),
       parentFolderId: parentFolderId,
     })
-    .then(() => {
-      setToastMessage("Folder created successfully!");
-      setToastMode("success");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
-    })
-    .catch((error) => {
-      setToastMessage("Error creating Folder!");
-      setToastMode("error");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
-    });
-    setFolderRefresh(!folderRefresh);
-    setFolderName("");
-    onClose();
+      .then(() => {
+        setToastMessage("Folder created successfully!");
+        setToastMode("success");
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+      })
+      .catch((error) => {
+        setToastMessage("Error creating Folder!");
+        setToastMode("error");
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+      })
+      .finally(() => {
+        setIsLoading(false);
+        setFolderRefresh(!folderRefresh);
+        setFolderName("");
+        onClose();
+      });
   };
 
   const db = getFirestore(app);
 
-
   return (
     <>
-      {showToast && <Toast message="Folder created successfully!" mode={toastMode}/>}
+      {showToast && (
+        <Toast message="Folder created successfully!" mode={toastMode} />
+      )}
       <div className={`modal ${isOpen ? "modal-open" : ""}`} onClick={onClose}>
         <div
           className="modal-box relative max-w-xs bg-white text-gray-800"
@@ -75,10 +83,12 @@ const CreateFolderModal = ({ isOpen, onClose, onCreate }) => {
             onKeyDown={(e) => e.key === "Enter" && handleCreate()}
           />
           <button
-            onClick={handleCreate}
-            className="btn btn-primary w-full bg-blue-500 hover:bg-blue-600 text-white"
+            onClick={isLoading ? undefined : handleCreate}
+            className={` ${
+              isLoading ? "cursor-not-allowed	" : ""
+            } btn text-white border-none bg-primary-500 hover:bg-primary-400 mt-4 w-full`}
           >
-            Create
+            {isLoading ? "Loading..." : "Create"}
           </button>
         </div>
       </div>
@@ -87,5 +97,4 @@ const CreateFolderModal = ({ isOpen, onClose, onCreate }) => {
 };
 
 export default CreateFolderModal;
-
 
