@@ -4,7 +4,7 @@ import React, { use, useContext, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import SearchBar from "@/Components/SearchBar";
 import { ParentFolderIdContext } from "@/Context/ParentFolderIdContext";
-import { app } from "@/Config/FirebaseConfig";
+import app from "@/Config/FirebaseConfig";
 import { useSession } from "next-auth/react";
 import {
   collection,

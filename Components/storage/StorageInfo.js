@@ -1,6 +1,6 @@
 "use client";
 
-import { app } from "@/Config/FirebaseConfig";
+import app from "@/Config/FirebaseConfig";
 import {
   collection,
   getDocs,

@@ -13,7 +13,7 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { app } from "@/Config/FirebaseConfig";
+import app from "@/Config/FirebaseConfig";
 import { ParentFolderIdContext } from "@/Context/ParentFolderIdContext";
 import { FolderRefreshContext } from "@/Context/FolderRefreshContext";
 import { FileRefreshContext } from "@/Context/FileRefreshContext";

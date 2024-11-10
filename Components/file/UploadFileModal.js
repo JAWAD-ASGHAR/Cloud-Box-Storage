@@ -3,7 +3,7 @@ import { doc, getFirestore, setDoc } from "firebase/firestore";
 import { useSession } from "next-auth/react";
 import React, { useContext, useState } from "react";
 import Toast from "../Toast";
-import { app } from "@/Config/FirebaseConfig";
+import app from "@/Config/FirebaseConfig";
 import { FileRefreshContext } from "@/Context/FileRefreshContext";
 
 const UploadFileModal = ({ isOpen, onClose }) => {

@@ -6,7 +6,7 @@ import Loading from "../Loading";
 import { supabase } from "@/Config/supabaseClient";
 import { FileRefreshContext } from "@/Context/FileRefreshContext";
 import { deleteDoc, doc, getFirestore } from "firebase/firestore";
-import { app } from "@/Config/FirebaseConfig";
+import app from "@/Config/FirebaseConfig";
 import Toast from "../Toast";
 
 function FileList({ fileList, loading }) {
