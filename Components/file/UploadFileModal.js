@@ -36,7 +36,7 @@ const UploadFileModal = ({ isOpen, onClose }) => {
       // Check if the response is successful
       if (res.ok) {
         const data = await res.json();
-        console.log("Uploaded file URL:", data.url); // This should display the public URL
+        console.log("Uploaded file URL:", data); // This should display the public URL
         if (data.url) {
           console.log("File uploaded successfully. Public URL:", data.url);
         } else {

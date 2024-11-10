@@ -11,10 +11,6 @@ const SideNavBar = () => {
   const [isFolderModalOpen, setFolderModalOpen] = useState(false);
   const [isFileModalOpen, setFileModalOpen] = useState(false);
 
-  function handleCreateFolder() {
-    setModalOpen(true);
-  }
-
   return (
     <div className="w-[240px] bg-white h-screen sticky top-0 left-0 z-10 shadow-lg shadow-blue-100 p-4 border-r border-gray-200">
       {/* Logo */}
