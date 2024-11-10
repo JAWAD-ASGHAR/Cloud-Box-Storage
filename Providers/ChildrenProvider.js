@@ -9,15 +9,15 @@ const ChildrenProvider = ({ children }) => {
   const { data: session, status } = useSession();
 
   return (
-    <div className="flex w-full h-full">
+    <div className="flex">
       {status === "authenticated" && session ? (
         <>
           <SideNavBar />
           <div className="grid grid-cols-1 md:grid-cols-3 w-full">
             {/* Children container spanning two columns on medium screens and up */}
-            <div className="col-span-1 md:col-span-2">{children}</div>
+            <div className="col-span-2">{children}</div>
             {/* Storage container spanning one column */}
-            <div className="order-first md:order-last md:col-span-1">
+            <div className="order-first md:order-last">
               <Storage />
             </div>
           </div>
