@@ -55,6 +55,7 @@ const UploadFileModal = ({ isOpen, onClose }) => {
         createdDate: new Date(),
         parentFolderId,
         imageUrl: data.url,
+        imageName: data.name
       });
 
       // 3. Show success message using toast

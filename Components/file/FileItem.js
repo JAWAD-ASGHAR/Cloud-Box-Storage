@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import moment from "moment";
 import Image from "next/image";
@@ -14,17 +14,17 @@ function FileItem({ file }) {
     p-3 rounded-md"
     >
       <div className="flex gap-2 items-center">
-        <Image
-          src={image}
-          alt="file-icon"
-          width={26}
-          height={20}
-        />
-        <h2 className="text-[15px] truncate">{file.name}</h2>
+        <Image src={image} alt="file-icon" width={26} height={20} />
+        <h2
+          className="text-[15px] truncate hover:underline hover:text-primary-400"
+          onClick={() => window.open(file.imageUrl)}
+        >
+          {file.name}
+        </h2>
       </div>
       <div className="grid grid-cols-3 place-content-start">
         <h2 className="text-[15px]">
-          {moment(file.modifiedAt).format("MMMM DD, YYYY")}
+          {moment(file.modifiedAt).format("DD MMMM")}
         </h2>
         <h2 className="text-[15px]">
           {(file.size / 1024 ** 2).toFixed(2) + " MB"}

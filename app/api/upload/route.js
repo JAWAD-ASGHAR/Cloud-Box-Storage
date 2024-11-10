@@ -34,7 +34,7 @@ export async function POST(request) {
 
     const publicUrl = urlData?.publicUrl;
 
-    return new Response(JSON.stringify({ url: publicUrl }), {
+    return new Response(JSON.stringify({ url: publicUrl, name: fileName }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
