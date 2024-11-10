@@ -13,41 +13,36 @@ Cloud Storage App is a web application that provides cloud storage solutions usi
 ## Installation
 
 1. **Clone the repository:**
-   
-      ```bash
+   ```bash
    git clone https://github.com/JAWAD-ASGHAR/Cloud-Box.git
    cd cloud-storage-app
-
+   ```
 
 2. **Install dependencies:**
-   
-      ```bash
+   ```bash
    npm install
-
+   ```
 
 3. **Configure environment variables:**
-   Create a .env file in the root directory and add your Supabase and Firebase configuration details.
+   Create a `.env` file in the root directory and add your Supabase and Firebase configuration details.
 
 4. **Run the development server:**
-   
-     ```bash
+   ```bash
    npm run dev
-
+   ```
 
 5. **Build for production:**
-   
-     ```bash
+   ```bash
    npm run build
-
+   ```
 
 6. **Start the production server:**
-   
-     ```bash
+   ```bash
    npm start
-
+   ```
 
 ## Usage
-- Access the application at http://localhost:3000 in your browser.
+- Access the application at `http://localhost:3000` in your browser.
 - Sign up or log in to start using the cloud storage features.
 - Upload, download, and manage your files.
 
