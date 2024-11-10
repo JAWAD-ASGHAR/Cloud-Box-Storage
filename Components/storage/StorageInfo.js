@@ -149,7 +149,7 @@ const StorageInfo = () => {
       <div className="mt-6 flex flex-col items-center bg-gray-100 p-5 rounded-lg">
         <p className="text-gray-800 font-semibold">Need More Space?</p>
         <p className="text-gray-600 text-sm">Get more space by upgrading the plan</p>
-        <button className="bg-blue-500 text-white mt-3 p-2 rounded-lg hover:bg-blue-400 font flex items-center justify-center">
+        <button className="bg-primary-500 text-white mt-3 p-2 rounded-lg hover:bg-blue-400 font flex items-center justify-center">
           Upgrade Plan
         </button>
       </div>
