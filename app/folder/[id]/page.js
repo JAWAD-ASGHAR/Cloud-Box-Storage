@@ -110,7 +110,7 @@ const FolderDetails = ({ params }) => {
   };
 
   return (
-    <div className="p-5 h-screen bg-slate-100">
+    <div className="p-5 h-full bg-slate-100">
       <SearchBar />
       <h1 className="font-bold text-[20px] mt-5 m-3">{folderName}</h1>
       <InnerFolderList folderList={folderList} folderLoading={folderLoading} />

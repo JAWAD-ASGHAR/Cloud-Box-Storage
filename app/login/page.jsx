@@ -19,7 +19,7 @@ const Page = () => {
   })
 
   return (
-    <div className="relative h-screen w-full overflow-hidden">
+    <div className="relative h-full w-full overflow-hidden">
       {/* Base gradient layer */}
       <div className="absolute inset-0 bg-gradient-to-r from-[#e0f7fa] via-[#bbdefb] to-[#d1c4e9]" />
       

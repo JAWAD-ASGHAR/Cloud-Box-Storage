@@ -100,7 +100,7 @@ export default function Home() {
   };
 
   return (
-    <div className="h-screen bg-slate-100 p-5">
+    <div className="h-full bg-slate-100 p-5">
       <SearchBar />
       <FolderList folderList={folderList} loading={folderLoading} />
       <FileList fileList={fileList} loading={fileLoading} />
