@@ -4,7 +4,7 @@ import Loader from "./Loader";
 
 const ErrorPage = ({ statusCode }) => {
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100 text-center">
+    <div className="min-h-full flex flex-col justify-center items-center bg-gray-100 text-center">
       <h1 className="text-6xl font-bold text-red-500 mb-6">
         {statusCode || "Error"}
       </h1>
