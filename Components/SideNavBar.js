@@ -11,6 +11,11 @@ const SideNavBar = () => {
   const [isFolderModalOpen, setFolderModalOpen] = useState(false);
   const [isFileModalOpen, setFileModalOpen] = useState(false);
 
+  const handleMenuClick = (path, index) => {
+    setActiveIndex(index);
+    redirect(path);
+  };
+
   return (
     <div className="w-[240px] bg-white h-screen sticky top-0 left-0 z-10 shadow-lg shadow-blue-100 p-4 border-r border-gray-200">
       {/* Logo */}
@@ -63,7 +68,7 @@ const SideNavBar = () => {
       <div className="space-y-1">
         {menuData.map((item, index) => (
           <div
-            onClick={() => setActiveIndex(index)}
+            onClick={() => handleMenuClick(item.path, index)}
             key={index}
             className={`flex items-center gap-3 px-4 py-2 ${
               index === activeIndex ? "bg-gray-200" : ""
