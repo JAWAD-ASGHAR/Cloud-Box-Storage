@@ -12,6 +12,8 @@ const ChildrenProvider = ({ children }) => {
     <>
       {status === "authenticated" && session ? (
         <>
+          {/* children rendering */}
+
           <div className="flex">
             <SideNavBar />
             <div className="grid grid-cols-1 md:grid-cols-3 w-full">

@@ -21,6 +21,7 @@ export default function RootLayout({ children }) {
             <FolderRefreshContextWrapper>
               <FileRefreshContextWrapper>
                 <ChildrenProvider children={children} />
+                
               </FileRefreshContextWrapper>
             </FolderRefreshContextWrapper>
           </ParentFolderIdContextWrapper>
