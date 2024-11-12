@@ -19,9 +19,15 @@ const CreateFolderModal = ({ isOpen, onClose }) => {
   const { data: session } = useSession();
   const { folderRefresh, setFolderRefresh } = useContext(FolderRefreshContext);
 
+  const handleClose = () => {
+    if(isLoading) return
+    setFolderName("");
+    onClose();
+  };
+
   const handleCreate = async () => {
     if (!folderName) {
-      onClose();
+      handleClose();
       return;
     }
     setIsLoading(true);
@@ -48,7 +54,7 @@ const CreateFolderModal = ({ isOpen, onClose }) => {
         setIsLoading(false);
         setFolderRefresh(!folderRefresh);
         setFolderName("");
-        onClose();
+        handleClose();
       });
   };
 
@@ -59,14 +65,14 @@ const CreateFolderModal = ({ isOpen, onClose }) => {
       {showToast && (
         <Toast message="Folder created successfully!" mode={toastMode} />
       )}
-      <div className={`modal ${isOpen ? "modal-open" : ""}`} onClick={onClose}>
+      <div className={`modal ${isOpen ? "modal-open" : ""}`} onClick={handleClose}>
         <div
           className="modal-box relative max-w-xs bg-white text-gray-800"
           onClick={(e) => e.stopPropagation()} // Prevents click outside from closing
         >
           <button
             className="btn btn-sm btn-circle absolute right-2 top-2 bg-white hover:bg-gray-100 border-none"
-            onClick={onClose}
+            onClick={handleClose}
           >
             ✕
           </button>

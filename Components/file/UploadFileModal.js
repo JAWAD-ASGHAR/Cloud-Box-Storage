@@ -38,6 +38,9 @@ const UploadFileModal = ({ isOpen, onClose }) => {
   };
 
   const closeModal = () => {
+    if(isUploading){
+      return
+    }
     setSelectedFile(null);
     onClose();
   };
