@@ -155,7 +155,7 @@ const UploadFileModal = ({ isOpen, onClose }) => {
                   )}
                   <input
                     type="file"
-                    className={hidden}
+                    className={"hidden"}
                     onChange={handleFileSelect}
                     disabled={isUploading}
                   />
