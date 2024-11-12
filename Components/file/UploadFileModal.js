@@ -101,7 +101,7 @@ const UploadFileModal = ({ isOpen, onClose }) => {
   return (
     <>
       {showToast && <Toast message={toastMessage} mode={toastMode} />}
-      <div className={`modal ${isOpen ? "modal-open" : ""}`} onClick={closeModal}>
+      <div className={`modal backdrop-blur-md z-30 ${isOpen ? "modal-open" : ""}`} onClick={closeModal}>
         <div
           className="modal-box p-9 bg-white items-center w-[360px] relative"
           onClick={(e) => e.stopPropagation()}

@@ -12,7 +12,7 @@ const FolderItem = ({
   const [hovered, setHovered] = React.useState(null);
   const handleDelete = (e) => {
     e.stopPropagation();
-    deleteFolder(folder);
+    deleteFolder();
   };
 
   return (

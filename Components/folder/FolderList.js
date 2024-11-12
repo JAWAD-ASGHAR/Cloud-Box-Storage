@@ -19,6 +19,7 @@ import { FolderRefreshContext } from "@/Context/FolderRefreshContext";
 import Toast from "../Toast";
 import { supabase } from "@/Config/supabaseClient";
 import { FileRefreshContext } from "@/Context/FileRefreshContext";
+import Modal from "../Modal";
 
 const FolderList = ({ folderList, loading }) => {
   const [activeFolderId, setActiveFolderId] = useState(null);
@@ -26,12 +27,16 @@ const FolderList = ({ folderList, loading }) => {
   const { folderRefresh, setFolderRefresh } = useContext(FolderRefreshContext);
   const { fileRefresh, setFileRefresh } = useContext(FileRefreshContext);
   const [showToast, setShowToast] = useState(false);
+  const [selectedFolder, setSelectedFolder] = useState(null);
   const [toastMessage, setToastMessage] = useState("");
   const [toastMode, setToastMode] = useState("");
+  const [showModal, setShowModal] = useState(false);
   const db = getFirestore(app);
   const router = useRouter();
 
   const handleFolderDelete = async (folder) => {
+    setShowModal(true);
+
     try {
       console.log("Deleting folder:", folder);
       setDeleteLoading(folder.id);
@@ -56,11 +61,11 @@ const FolderList = ({ folderList, loading }) => {
       setToastMode("error");
     } finally {
       setTimeout(() => setShowToast(false), 3000);
+      setShowModal(false);
       setDeleteLoading(null); // Reset loading state
     }
   };
 
-  // Helper function to delete all files in a given folder
   const deleteFilesInFolder = async (folderId) => {
     console.log("Deleting files in folder:", folderId);
 
@@ -103,7 +108,6 @@ const FolderList = ({ folderList, loading }) => {
     }
   };
 
-  // Recursive function to delete all subfolders
   const deleteSubfolders = async (parentFolderId) => {
     console.log("Checking for subfolders in folder:", parentFolderId);
 
@@ -129,15 +133,26 @@ const FolderList = ({ folderList, loading }) => {
       console.log("No subfolders found in folder with id:", parentFolderId);
     }
   };
-
   const handleFolderClick = (folder) => {
     setActiveFolderId(folder.id);
     router.push(`/folder/${folder.id}?name=${folder.name}`);
   };
 
+  const handleDeleteRequest = (folder) => {
+    setSelectedFolder(folder);
+    setShowModal(true);
+  };
+
   return (
     <>
       {showToast && <Toast message={toastMessage} mode={toastMode} />}
+      <Modal
+        isOpen={showModal}
+        loading={deleteLoading}
+        onConfirm={() => handleFolderDelete(selectedFolder)}
+        mode={"delete"}
+        onCancel={() => setShowModal(false)}
+      />
       <div className="p-5 mt-5 bg-white rounded-lg">
         <h2 className="text-[17px] font-bold">
           Recent Folders
@@ -164,7 +179,7 @@ const FolderList = ({ folderList, loading }) => {
                     <FolderItem
                       folder={folder}
                       active={activeFolderId === folder.id}
-                      deleteFolder={handleFolderDelete}
+                      deleteFolder={() => handleDeleteRequest(folder)}
                       handleFolderClick={handleFolderClick}
                       loadingId={deleteLoading == folder.id}
                     />

@@ -65,7 +65,7 @@ const CreateFolderModal = ({ isOpen, onClose }) => {
       {showToast && (
         <Toast message="Folder created successfully!" mode={toastMode} />
       )}
-      <div className={`modal ${isOpen ? "modal-open" : ""}`} onClick={handleClose}>
+      <div className={`modal backdrop-blur-md z-30 ${isOpen ? "modal-open" : ""}`} onClick={handleClose}>
         <div
           className="modal-box relative max-w-xs bg-white text-gray-800"
           onClick={(e) => e.stopPropagation()} // Prevents click outside from closing

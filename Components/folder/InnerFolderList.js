@@ -18,6 +18,7 @@ import { supabase } from "@/Config/supabaseClient";
 import { FileRefreshContext } from "@/Context/FileRefreshContext";
 import InnerFolderItem from "./InnerFolderItem";
 import { useRouter } from "next/navigation";
+import Modal from "../Modal";
 
 const InnerFolderList = ({ folderList, folderLoading }) => {
   const router = useRouter();
@@ -27,11 +28,14 @@ const InnerFolderList = ({ folderList, folderLoading }) => {
   const { fileRefresh, setFileRefresh } = useContext(FileRefreshContext);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [selectedFolder, setSelectedFolder] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   const [toastMode, setToastMode] = useState("");
   const db = getFirestore(app);
 
   const handleFolderDelete = async (folder) => {
     try {
+      setShowModal(true);
       console.log("Deleting folder:", folder);
       setDeleteLoading(folder.id);
 
@@ -56,6 +60,7 @@ const InnerFolderList = ({ folderList, folderLoading }) => {
     } finally {
       setTimeout(() => setShowToast(false), 3000);
       setDeleteLoading(null); // Reset loading state
+      setShowModal(false); // Reset modal state
     }
   };
 
@@ -134,6 +139,11 @@ const InnerFolderList = ({ folderList, folderLoading }) => {
     router.push(`/folder/${folder.id}?name=${folder.name}`);
   };
 
+  const handleDeleteRequest = (folder) => {
+    setSelectedFolder(folder);
+    setShowModal(true);
+  };
+
   return (
     <>
       {showToast && (
@@ -143,6 +153,13 @@ const InnerFolderList = ({ folderList, folderLoading }) => {
           setShowToast={setShowToast}
         />
       )}
+      <Modal
+        isOpen={showModal}
+        loading={deleteLoading}
+        onConfirm={() => handleFolderDelete(selectedFolder)}
+        mode={"delete"}
+        onCancel={() => setShowModal(false)}
+      />
       <div className="p-5 mt-5 bg-white rounded-lg">
         <div className="flex items-center justify-center">
           <Loading
@@ -162,9 +179,10 @@ const InnerFolderList = ({ folderList, folderLoading }) => {
               <li key={folder.id}>
                 <InnerFolderItem
                   folder={folder}
+                  modalOpen={showModal}
                   loadingId={deleteLoading === folder.id}
                   active={activeFolderId === folder.id}
-                  onDelete={handleFolderDelete}
+                  onDelete={handleDeleteRequest}
                   handleClick={handleFolderClick}
                 />
               </li>

@@ -3,9 +3,8 @@ const Modal = ({ isOpen, mode, onConfirm, onCancel, loading }) => {
 
   const handleCancel = () => {
     if (loading) return;
-    handleCancel();
+    onCancel();
   };
-
   const message =
     mode === "delete"
       ? "Are you sure you want to delete?"
@@ -17,10 +16,10 @@ const Modal = ({ isOpen, mode, onConfirm, onCancel, loading }) => {
 
   return (
     <div
-      className={`modal ${
+      className={`modal backdrop-blur-md z-30 ${
         isOpen ? "modal-open" : ""
       } flex items-center justify-center`}
-      onClick={handleCancel}
+       onClick={handleCancel}
     >
       <div
         className="modal-box p-8 bg-white w-[400px] max-w-full rounded-lg shadow-lg relative flex flex-col items-center"
@@ -53,3 +52,4 @@ const Modal = ({ isOpen, mode, onConfirm, onCancel, loading }) => {
 };
 
 export default Modal;
+
