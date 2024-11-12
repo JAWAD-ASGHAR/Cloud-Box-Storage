@@ -6,6 +6,8 @@ import Toast from "../Toast";
 import app from "@/Config/FirebaseConfig";
 import { FileRefreshContext } from "@/Context/FileRefreshContext";
 
+const MAX_FILE_SIZE = 1024 * 1024 * 5; // 5MB
+
 const UploadFileModal = ({ isOpen, onClose }) => {
   const { data: session } = useSession();
   const [showToast, setShowToast] = useState(false);
@@ -21,7 +23,18 @@ const UploadFileModal = ({ isOpen, onClose }) => {
   const handleFileSelect = (e) => {
     setSelectedFile(null);
     const file = e.target.files[0];
-    if (file) setSelectedFile(file);
+    if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        setToastMessage(`File size exceeded the maximum limit of ${MAX_FILE_SIZE / (1024 * 1024)}MB!`);
+        setToastMode("error");
+        setSelectedFile(null);
+        onClose();
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+        return;
+      }
+      setSelectedFile(file);
+    }
   };
 
   const closeModal = () => {
@@ -121,7 +134,7 @@ const UploadFileModal = ({ isOpen, onClose }) => {
                         or drag and drop
                       </p>
                       <p className="text-xs text-gray-500">
-                        SVG, PNG, JPG or GIF (MAX. 800x400px)
+                        SVG, PNG, JPG or GIF (MAX. {MAX_FILE_SIZE / (1024 * 1024)}MB)
                       </p>
                     </>
                   ) : (
@@ -161,5 +174,4 @@ const UploadFileModal = ({ isOpen, onClose }) => {
 };
 
 export default UploadFileModal;
-
 
