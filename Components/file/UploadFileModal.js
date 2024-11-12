@@ -77,6 +77,7 @@ const UploadFileModal = ({ isOpen, onClose }) => {
         parentFolderId,
         imageUrl: data.url,
         imageName: data.name,
+        isStarred: false,
       });
 
       setFileRefresh(!fileRefresh);
