@@ -1,6 +1,23 @@
-import React from 'react';
+"use client"
+
+import { ParentFolderIdContext } from "@/Context/ParentFolderIdContext";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import React, { useContext, useEffect } from "react";
 
 const NotFound = () => {
+
+  const { status } = useSession();
+  const router = useRouter();
+  const {setParentFolderId} = useContext(ParentFolderIdContext);
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+    setParentFolderId(0);
+  }, [status]);
+
   return (
     <div className="flex h-screen bg-slate-100 items-center justify-center">
       <div className="text-center">
@@ -17,7 +34,6 @@ const NotFound = () => {
       </div>
     </div>
   );
-}
+};
 
 export default NotFound;
-
