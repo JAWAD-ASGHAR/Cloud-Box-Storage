@@ -114,8 +114,8 @@ const UploadFileModal = ({ isOpen, onClose }) => {
           </button>
           <div className="w-full items-center flex flex-col justify-center gap-3">
             <div className="flex items-center justify-center w-full">
-              <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+              <label className="flex flex-col items-center justify-center w-full h-64 border-2  border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                <div className={`flex flex-col items-center justify-center pt-5 pb-6`}>
                   {!selectedFile ? (
                     <>
                       <svg
@@ -142,7 +142,7 @@ const UploadFileModal = ({ isOpen, onClose }) => {
                       </p>
                     </>
                   ) : (
-                      <div className="flex flex-col items-center space-y-2 mt-2">
+                      <div className={`flex flex-col items-center space-y-2 mt-2`}>
                         <p className="font-semibold text-gray-700">
                           {selectedFile.name}
                         </p>
@@ -155,7 +155,7 @@ const UploadFileModal = ({ isOpen, onClose }) => {
                   )}
                   <input
                     type="file"
-                    className="hidden"
+                    className={hidden}
                     onChange={handleFileSelect}
                     disabled={isUploading}
                   />

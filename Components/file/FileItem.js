@@ -8,6 +8,8 @@ import Image from "next/image";
 import react, { useContext, useState } from "react";
 import Toast from "../Toast";
 
+const iconsArray = ["doc", "jpg", "mp4", "pdf", "png", "pptx"];
+
 function FileItem({ file, loadingId, delete: deleteFile }) {
   const image = "/" + file.type + ".png";
   const deleteLoading = loadingId === file.id;
@@ -55,17 +57,22 @@ function FileItem({ file, loadingId, delete: deleteFile }) {
 
   return (
     <>
-    {activeToast && <Toast message={toastMessage} mode={toastMode}/>}
+      {activeToast && <Toast message={toastMessage} mode={toastMode} />}
       <div
         className={`grid grid-cols-1 md:grid-cols-2 justify-between p-3 rounded-md 
         ${
-          deleteLoading || starLoading
+          starLoading
             ? "bg-gray-200 cursor-not-allowed opacity-50"
             : "hover:bg-gray-100 cursor-pointer"
         }`}
       >
         <div className="flex gap-2 items-center">
-          <Image src={image} alt="file-icon" width={26} height={20} />
+          <Image
+            src={iconsArray.includes(file.type) ? image : "/doc.png"}
+            alt="file-icon"
+            width={26}
+            height={20}
+          />
           <h2
             className={`text-[15px] truncate ${
               !deleteLoading && "hover:underline hover:text-primary-400"
