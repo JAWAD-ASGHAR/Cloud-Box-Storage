@@ -1,41 +1,57 @@
 "use client";
 
-import React, { useContext, useState } from "react";
-import Loading from "../Loading";
+import React, { useContext, useEffect, useState } from "react";
 import {
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
   getFirestore,
+  collection,
   query,
   where,
+  getDocs,
+  deleteDoc,
+  doc,
 } from "firebase/firestore";
 import app from "@/Config/FirebaseConfig";
-import { FolderRefreshContext } from "@/Context/FolderRefreshContext";
-import Toast from "../Toast";
-import { supabase } from "@/Config/supabaseClient";
-import { FileRefreshContext } from "@/Context/FileRefreshContext";
-import InnerFolderItem from "./InnerFolderItem";
+import { useSession } from "next-auth/react";
+import Loading from "@/Components/Loading";
+import Toast from "@/Components/Toast";
 import { useRouter } from "next/navigation";
-import Modal from "../Modal";
+import SearchBar from "@/Components/SearchBar";
+import { ParentFolderIdContext } from "@/Context/ParentFolderIdContext";
+import FolderItem from "@/Components/folder/FolderItem";
+import { FolderRefreshContext } from "@/Context/FolderRefreshContext";
+import Modal from "@/Components/Modal";
+import { FileRefreshContext } from "@/Context/FileRefreshContext";
 
-const InnerFolderList = ({ folderList, folderLoading }) => {
+const Page = () => {
+  const db = getFirestore(app);
   const router = useRouter();
-  const [activeFolderId, setActiveFolderId] = useState(null);
-  const [deleteLoading, setDeleteLoading] = useState(null);
-  const { folderRefresh, setFolderRefresh } = useContext(FolderRefreshContext);
-  const { fileRefresh, setFileRefresh } = useContext(FileRefreshContext);
+  const { data: session, status } = useSession();
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
+  const [toastMode, setToastMode] = useState("");
+  const { setParentFolderId } = useContext(ParentFolderIdContext);
+  const {folderRefresh, setFolderRefresh} = useContext(FolderRefreshContext);
+  const {fileRefresh, setFileRefresh} = useContext(FileRefreshContext);
+  const [activeFolderId, setActiveFolderId] = useState(null);
+  const [folderLoading, setFolderLoading] = useState(true);
   const [selectedFolder, setSelectedFolder] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [toastMode, setToastMode] = useState("");
-  const db = getFirestore(app);
+  const [folderList, setFolderList] = useState([]);
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    } else if (status === "authenticated") {
+      getFolderList();
+    }
+    setParentFolderId(0);
+  }, [status, folderRefresh ]);
 
   const handleFolderDelete = async (folder) => {
+    setShowModal(true);
+
     try {
-      setShowModal(true);
       console.log("Deleting folder:", folder);
       setDeleteLoading(folder.id);
 
@@ -58,13 +74,13 @@ const InnerFolderList = ({ folderList, folderLoading }) => {
       setToastMessage(`Error deleting folder: ${err.message}`);
       setToastMode("error");
     } finally {
+      setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
+      setShowModal(false);
       setDeleteLoading(null); // Reset loading state
-      setShowModal(false); // Reset modal state
     }
   };
 
-  // Helper function to delete all files in a given folder
   const deleteFilesInFolder = async (folderId) => {
     console.log("Deleting files in folder:", folderId);
 
@@ -107,7 +123,6 @@ const InnerFolderList = ({ folderList, folderLoading }) => {
     }
   };
 
-  // Recursive function to delete all subfolders
   const deleteSubfolders = async (parentFolderId) => {
     console.log("Checking for subfolders in folder:", parentFolderId);
 
@@ -133,7 +148,6 @@ const InnerFolderList = ({ folderList, folderLoading }) => {
       console.log("No subfolders found in folder with id:", parentFolderId);
     }
   };
-
   const handleFolderClick = (folder) => {
     setActiveFolderId(folder.id);
     router.push(`/folder/${folder.id}?name=${folder.name}`);
@@ -144,15 +158,27 @@ const InnerFolderList = ({ folderList, folderLoading }) => {
     setShowModal(true);
   };
 
+  const getFolderList = async () => {
+    setFolderLoading(true);
+    try {
+      const q = query(
+        collection(db, "folders"),
+        where("createdBy", "==", session.user.email),
+        where("parentFolderId", "==", 0)
+      );
+      const querySnapshot = await getDocs(q);
+      const folders = querySnapshot.docs.map((doc) => doc.data());
+      setFolderList(folders);
+    } catch (error) {
+      console.error("Error fetching folders:", error);
+    } finally {
+      setFolderLoading(false);
+    }
+  };
+
   return (
     <>
-      {showToast && (
-        <Toast
-          message={toastMessage}
-          mode={toastMode}
-          setShowToast={setShowToast}
-        />
-      )}
+      {showToast && <Toast message={toastMessage} mode={toastMode} />}
       <Modal
         isOpen={showModal}
         loading={deleteLoading}
@@ -160,38 +186,45 @@ const InnerFolderList = ({ folderList, folderLoading }) => {
         mode={"delete"}
         onCancel={() => setShowModal(false)}
       />
-      <div className="p-5 mt-5 bg-white rounded-lg">
-        <div className="flex items-center justify-center">
-          <Loading
-            loading={folderLoading}
-            size="loading-md"
-            className="w-full my-10"
-          />
+      <div className="h-full bg-slate-100 p-5">
+        <SearchBar />
+        <div className="bg-white mt-5 p-5 rounded-lg">
+          <h2 className="text-[18px] font-bold">View Folders</h2>
+          {folderLoading ? (
+            <div className="flex items-center justify-center mt-3 m-3">
+              <Loading
+                loading={folderLoading}
+                size="loading-md"
+                className="w-full my-10"
+              />
+            </div>
+          ) : (
+            <div>
+              {folderList.length > 0 ? (
+                <div className="grid grid-cols-2 mt-3 m-3 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                  {folderList.map((folder) => (
+                    <div key={folder.id}>
+                      <FolderItem
+                        folder={folder}
+                        active={activeFolderId === folder.id}
+                        deleteFolder={() => handleDeleteRequest(folder)}
+                        handleFolderClick={handleFolderClick}
+                        loadingId={deleteLoading == folder.id}
+                      />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center my-10 text-gray-500">
+                  No folders found
+                </p>
+              )}
+            </div>
+          )}
         </div>
-        {!folderList.length && !folderLoading && (
-          <p className="text-center my-10 text-gray-500">
-            No available folders
-          </p>
-        )}
-        {folderList.length > 0 && (
-          <ul className="m-3">
-            {folderList.map((folder) => (
-              <li key={folder.id}>
-                <InnerFolderItem
-                  folder={folder}
-                  modalOpen={showModal}
-                  loadingId={deleteLoading === folder.id}
-                  active={activeFolderId === folder.id}
-                  onDelete={handleDeleteRequest}
-                  handleClick={handleFolderClick}
-                />
-              </li>
-            ))}
-          </ul>
-        )}
       </div>
     </>
   );
 };
 
-export default InnerFolderList;
+export default Page;

@@ -16,7 +16,7 @@ const ChildrenProvider = ({ children }) => {
             <SideNavBar />
             <div className="grid grid-cols-1 md:grid-cols-3 w-full">
               <div className="col-span-2">{children}</div>
-              <div className="order-first md:order-last">
+              <div className="order-first md:order-last ">
                 <Storage />
               </div>
             </div>

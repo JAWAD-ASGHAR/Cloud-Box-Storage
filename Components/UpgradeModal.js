@@ -1,33 +1,31 @@
 "use client";
 
-import React, { useContext, useEffect } from "react";
-import SearchBar from "@/Components/SearchBar";
-import { ParentFolderIdContext } from "@/Context/ParentFolderIdContext";
+import React from "react";
 import { FaGithub, FaInstagram, FaLinkedin } from "react-icons/fa";
 
-const Page = () => {
-  const { setParentFolderId } = useContext(ParentFolderIdContext);
-
-  useEffect(() => {
-    setParentFolderId(0);
-  }, []);
+const UpgradeModal = ({ isOpen, onCancel }) => {
+  if (!isOpen) return null;
 
   return (
-    <>
-      <div className="min-h-screen flex flex-col bg-slate-100 p-5">
-        <SearchBar />
-        
-        {/* Main Help Card */}
-        <div className="flex flex-col items-center w-full mx-auto bg-white rounded-xl p-8 mt-5">
-          
+    <div
+      className={`modal backdrop-blur-md z-30 ${
+        isOpen ? "modal-open" : ""
+      } flex items-center justify-center`}
+      onClick={onCancel}
+    >
+      <div
+        className="modal-box p-8 bg-white w-[400px] max-w-full rounded-lg shadow-lg relative flex flex-col items-center"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex flex-col items-center w-full mx-auto">
           {/* Title */}
           <h2 className="text-3xl mt-5 font-bold text-gray-800 mb-2 text-center">
-            Need Support?
+            Need Upgrade?
           </h2>
           <p className="text-gray-600 text-center mb-6">
-            We're here to help you with any questions or issues. Don’t hesitate to reach out!
+          If you need more Storage, features or have any questions, feel free to reach out to the dev!
           </p>
-          
+
           {/* Contact Button */}
           <a
             href="mailto:connect.jawadasghar@gmail.com"
@@ -68,15 +66,9 @@ const Page = () => {
             </a>
           </div>
         </div>
-
-        {/* Footer Section */}
-        <div className="mt-16 text-center text-sm text-gray-500">
-          <p>&copy; {new Date().getFullYear()} CloudBox. All rights reserved.</p>
-          <p className="mt-1">Privacy Policy | Terms of Service</p>
-        </div>
       </div>
-    </>
+    </div>
   );
 };
 
-export default Page;
+export default UpgradeModal;

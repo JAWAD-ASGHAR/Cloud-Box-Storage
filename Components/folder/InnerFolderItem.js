@@ -2,18 +2,22 @@ import Image from "next/image";
 import React from "react";
 import { FaTrash } from "react-icons/fa";
 
-const InnerFolderItem = ({ folder, active, onDelete, loadingId, handleClick }) => {
+const InnerFolderItem = ({ folder, active, onDelete, loadingId, handleClick, modalOpen }) => {
   const handleDelete = (e) => {
     e.stopPropagation();
-    onDelete(folder);
+    if (!modalOpen) {
+      onDelete(folder);
+    }
   };
 
   return (
     <div
       className={`w-full flex items-center justify-between hover:shadow-sm ${
         active ? "bg-gray-50" : ""
-      } hover:bg-gray-50 cursor-pointer p-3 ${loadingId ? "cursor-not-allowed opacity-50" : ""}`}
-       onClick={() => handleClick(folder)}
+      } hover:bg-gray-50 cursor-pointer p-3 ${
+        loadingId || modalOpen ? "cursor-not-allowed opacity-50 pointer-events-none" : ""
+      }`}
+      onClick={() => !modalOpen && handleClick(folder)}
     >
       <div className="w-full flex items-center">
         <Image
@@ -36,3 +40,4 @@ const InnerFolderItem = ({ folder, active, onDelete, loadingId, handleClick }) =
 };
 
 export default InnerFolderItem;
+

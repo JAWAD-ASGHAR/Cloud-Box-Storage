@@ -12,12 +12,14 @@ import React, { useEffect, useContext } from "react";
 import { useSession } from "next-auth/react";
 import { FaImage, FaVideo, FaFileAlt, FaFile } from "react-icons/fa"; // Import specific icons
 import { FileRefreshContext } from "@/Context/FileRefreshContext";
+import UpgradeModal from "../UpgradeModal";
 
 const StorageInfo = () => {
   const db = getFirestore(app);
   const { data: session, status } = useSession();
   const { fileRefresh, setFileRefresh } = useContext(FileRefreshContext);
   const [totalSize, setTotalSize] = React.useState(0);
+  const [modalOpen , setModalOpen] = React.useState(false);
   const [fileStats, setFileStats] = React.useState({
     Images: { size: 0, count: 0 },
     Videos: { size: 0, count: 0 },
@@ -102,6 +104,7 @@ const StorageInfo = () => {
 
   return (
     <div>
+      <UpgradeModal isOpen={modalOpen} onCancel={() => setModalOpen(false)} />
       {/* Storage Progress Section */}
       <h2 className="text-[22px] font-bold mb-2 mt-8">
         {totalSize} MB <span className="text-[14px] font-medium text-gray-400">used of</span> 50 MB
@@ -149,7 +152,7 @@ const StorageInfo = () => {
       <div className="mt-6 flex flex-col items-center bg-gray-100 p-5 rounded-lg">
         <p className="text-gray-800 font-semibold">Need More Space?</p>
         <p className="text-gray-600 text-sm">Get more space by upgrading the plan</p>
-        <button className="bg-primary-500 text-white mt-3 p-2 rounded-lg transition-all ease-in-out duration-300 hover:bg-primary-600 font flex items-center justify-center">
+        <button onClick={() => setModalOpen(true)} className="bg-primary-500 text-white mt-3 p-2 rounded-lg transition-all ease-in-out duration-300 hover:bg-primary-600 font flex items-center justify-center">
           Upgrade Plan
         </button>
       </div>

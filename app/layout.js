@@ -4,6 +4,8 @@ import ParentFolderIdContextWrapper from "@/Providers/ParentFolderIdContextWrapp
 import FolderRefreshContextWrapper from "@/Providers/FolderRefreshContextWrapper";
 import FileRefreshContextWrapper from "@/Providers/FileRefreshContextWrapper";
 import ChildrenProvider from "@/Providers/ChildrenProvider";
+import SideNavBar from "@/Components/SideNavBar";
+import Storage from "@/Components/storage/Storage";
 
 export const metadata = {
   title: "Cloud Box",
