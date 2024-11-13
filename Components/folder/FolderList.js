@@ -174,7 +174,7 @@ const FolderList = ({ folderList, loading }) => {
           <div>
             {folderList.length > 0 ? (
               <div className="grid grid-cols-2 mt-3 m-3 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                {folderList.map((folder) => (
+                {folderList.slice(0, 10).map((folder) => (
                   <div key={folder.id}>
                     <FolderItem
                       folder={folder}
