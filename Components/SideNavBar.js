@@ -15,7 +15,7 @@ const SideNavBar = () => {
   const [showWarning, setShowWarning] = useState(false);
 
   useEffect(() => {
-    if (usedStorage > 45) {
+    if (usedStorage > 45 * 1024 * 1024) {
       setShowWarning(true);
     } else {
       setShowWarning(false);
