@@ -31,8 +31,8 @@ const Page = () => {
   const [toastMessage, setToastMessage] = useState("");
   const [toastMode, setToastMode] = useState("");
   const { setParentFolderId } = useContext(ParentFolderIdContext);
-  const {folderRefresh, setFolderRefresh} = useContext(FolderRefreshContext);
-  const {fileRefresh, setFileRefresh} = useContext(FileRefreshContext);
+  const { folderRefresh, setFolderRefresh } = useContext(FolderRefreshContext);
+  const { fileRefresh, setFileRefresh } = useContext(FileRefreshContext);
   const [activeFolderId, setActiveFolderId] = useState(null);
   const [folderLoading, setFolderLoading] = useState(true);
   const [selectedFolder, setSelectedFolder] = useState(null);
@@ -46,7 +46,7 @@ const Page = () => {
       getFolderList();
     }
     setParentFolderId(0);
-  }, [status, folderRefresh ]);
+  }, [status, folderRefresh]);
 
   const handleFolderDelete = async (folder) => {
     setShowModal(true);
@@ -202,17 +202,23 @@ const Page = () => {
             <div>
               {folderList.length > 0 ? (
                 <div className="grid grid-cols-2 mt-3 m-3 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                  {folderList.map((folder) => (
-                    <div key={folder.id}>
-                      <FolderItem
-                        folder={folder}
-                        active={activeFolderId === folder.id}
-                        deleteFolder={() => handleDeleteRequest(folder)}
-                        handleFolderClick={handleFolderClick}
-                        loadingId={deleteLoading == folder.id}
-                      />
-                    </div>
-                  ))}
+                  {folderList
+                    .sort(
+                      (a, b) =>
+                        b.createdDate.toDate().getTime() -
+                        a.createdDate.toDate().getTime()
+                    )
+                    .map((folder) => (
+                      <div key={folder.id}>
+                        <FolderItem
+                          folder={folder}
+                          active={activeFolderId === folder.id}
+                          deleteFolder={() => handleDeleteRequest(folder)}
+                          handleFolderClick={handleFolderClick}
+                          loadingId={deleteLoading == folder.id}
+                        />
+                      </div>
+                    ))}
                 </div>
               ) : (
                 <p className="text-center my-10 text-gray-500">

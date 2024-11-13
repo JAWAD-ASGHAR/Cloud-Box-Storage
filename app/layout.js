@@ -4,12 +4,14 @@ import ParentFolderIdContextWrapper from "@/Providers/ParentFolderIdContextWrapp
 import FolderRefreshContextWrapper from "@/Providers/FolderRefreshContextWrapper";
 import FileRefreshContextWrapper from "@/Providers/FileRefreshContextWrapper";
 import ChildrenProvider from "@/Providers/ChildrenProvider";
-import SideNavBar from "@/Components/SideNavBar";
-import Storage from "@/Components/storage/Storage";
+import StorageContextWrapper from "@/Providers/StorageContextWrapper";
 
 export const metadata = {
   title: "Cloud Box",
   description: "Cloud Storage Web App",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({ children }) {
@@ -20,8 +22,9 @@ export default function RootLayout({ children }) {
           <ParentFolderIdContextWrapper>
             <FolderRefreshContextWrapper>
               <FileRefreshContextWrapper>
-                <ChildrenProvider children={children} />
-                {/* <div className="flex">
+                <StorageContextWrapper>
+                  <ChildrenProvider children={children} />
+                  {/* <div className="flex">
                   <SideNavBar />
                   <div className="grid grid-cols-1 md:grid-cols-3 w-full">
                     <div className="col-span-2">{children}</div>
@@ -30,6 +33,7 @@ export default function RootLayout({ children }) {
                     </div>
                   </div>
                 </div> */}
+                </StorageContextWrapper>
               </FileRefreshContextWrapper>
             </FolderRefreshContextWrapper>
           </ParentFolderIdContextWrapper>
@@ -38,3 +42,4 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+

@@ -1,15 +1,26 @@
 "use client";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import CreateFolderModal from "./folder/CreateFolderModal";
 import menuData from "@/Data/menu";
 import { redirect } from "next/navigation";
 import UploadFileModal from "./file/UploadFileModal";
+import { StorageContext } from "@/Context/StorageContext";
 
 const SideNavBar = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isFolderModalOpen, setFolderModalOpen] = useState(false);
   const [isFileModalOpen, setFileModalOpen] = useState(false);
+  const { usedStorage } = useContext(StorageContext);
+  const [showWarning, setShowWarning] = useState(false);
+
+  useEffect(() => {
+    if (usedStorage > 45) {
+      setShowWarning(true);
+    } else {
+      setShowWarning(false);
+    }
+  }, [usedStorage]);
 
   const handleMenuClick = (path, index) => {
     setActiveIndex(index);
@@ -92,10 +103,18 @@ const SideNavBar = () => {
           </div>
         ))}
       </div>
-        <UploadFileModal isOpen={isFileModalOpen} onClose={() => setFileModalOpen(false)}/>
-      <CreateFolderModal  isOpen={isFolderModalOpen} onClose={() => setFolderModalOpen(false)}/>
+      <UploadFileModal isOpen={isFileModalOpen} onClose={() => setFileModalOpen(false)}/>
+      <CreateFolderModal isOpen={isFolderModalOpen} onClose={() => setFolderModalOpen(false)}/>
+      
+      {/* Storage Warning */}
+      {showWarning && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 p-2 bg-red-200 text-red-700 text-center rounded">
+          Warning: You have reached 90% of your storage limit!
+        </div>
+      )}
     </div>
   );
 };
 
 export default SideNavBar;
+

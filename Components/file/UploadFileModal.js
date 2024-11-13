@@ -1,12 +1,13 @@
 import { ParentFolderIdContext } from "@/Context/ParentFolderIdContext";
 import { doc, getFirestore, setDoc } from "firebase/firestore";
 import { useSession } from "next-auth/react";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useRef } from "react";
 import Toast from "../Toast";
 import app from "@/Config/FirebaseConfig";
 import { FileRefreshContext } from "@/Context/FileRefreshContext";
+import { StorageContext } from "@/Context/StorageContext";
 
-const MAX_FILE_SIZE = 1024 * 1024 * 5; // 5MB
+const MAX_FILE_SIZE = 1024 * 1024 * 10; // 10MB
 
 const UploadFileModal = ({ isOpen, onClose }) => {
   const { data: session } = useSession();
@@ -17,8 +18,10 @@ const UploadFileModal = ({ isOpen, onClose }) => {
   const [isUploading, setIsUploading] = useState(false);
   const { parentFolderId } = useContext(ParentFolderIdContext);
   const { fileRefresh, setFileRefresh } = useContext(FileRefreshContext);
+  const { usedStorage, setUsedStorage } = useContext(StorageContext);
   const db = getFirestore(app);
   const docId = Date.now().toString();
+  const fileInputRef = useRef(null); // Reference for the file input
 
   const handleFileSelect = (e) => {
     setSelectedFile(null);
@@ -32,14 +35,22 @@ const UploadFileModal = ({ isOpen, onClose }) => {
         setShowToast(true);
         setTimeout(() => setShowToast(false), 3000);
         return;
+      } else if (usedStorage + file.size > 50 * 1024 * 1024) {
+        setToastMessage(`Storage limit exceeded!`);
+        setToastMode("error");
+        setSelectedFile(null);
+        onClose();
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+        return;
       }
       setSelectedFile(file);
     }
   };
 
   const closeModal = () => {
-    if(isUploading){
-      return
+    if (isUploading) {
+      return;
     }
     setSelectedFile(null);
     onClose();
@@ -95,6 +106,7 @@ const UploadFileModal = ({ isOpen, onClose }) => {
       setTimeout(() => setShowToast(false), 3000);
       setIsUploading(false);
       setSelectedFile(null); // Reset selected file after upload
+      if (fileInputRef.current) fileInputRef.current.value = null; // Clear file input
     }
   };
 
@@ -114,7 +126,7 @@ const UploadFileModal = ({ isOpen, onClose }) => {
           </button>
           <div className="w-full items-center flex flex-col justify-center gap-3">
             <div className="flex items-center justify-center w-full">
-              <label className="flex flex-col items-center justify-center w-full h-64 border-2  border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+              <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
                 <div className={`flex flex-col items-center justify-center pt-5 pb-6`}>
                   {!selectedFile ? (
                     <>
@@ -134,29 +146,32 @@ const UploadFileModal = ({ isOpen, onClose }) => {
                         />
                       </svg>
                       <p className="mb-2 text-sm text-gray-500">
-                        <span className="font-semibold">Click to upload</span>{" "}
-                        or drag and drop
+                        <span className="font-semibold">Click to upload</span> or drag and drop
                       </p>
                       <p className="text-xs text-gray-500">
                         SVG, PNG, JPG or GIF (MAX. {MAX_FILE_SIZE / (1024 * 1024)}MB)
                       </p>
                     </>
                   ) : (
-                      <div className={`flex flex-col items-center space-y-2 mt-2`}>
-                        <p className="font-semibold text-gray-700">
-                          {selectedFile.name}
-                        </p>
-                        <p
-                          className="text-xs text-red-600 hover:text-red-700 px-2 py-1 rounded transition duration-150"
-                        >
-                          Remove
-                        </p>
-                      </div>
+                    <div className={`flex flex-col items-center space-y-2 mt-2`}>
+                      <p className="font-semibold text-gray-700" title={selectedFile.name}>
+                        {selectedFile.name.length > 20
+                          ? `${selectedFile.name.slice(0, 17)}...`
+                          : selectedFile.name
+                        }
+                      </p>
+                      <p
+                        className="text-xs text-red-600 hover:text-red-700 px-2 py-1 rounded transition duration-150"
+                      >
+                        Remove
+                      </p>
+                    </div>
                   )}
                   <input
                     type="file"
-                    className={"hidden"}
+                    className="hidden"
                     onChange={handleFileSelect}
+                    ref={fileInputRef} // Attach ref here
                     disabled={isUploading}
                   />
                 </div>
@@ -164,9 +179,7 @@ const UploadFileModal = ({ isOpen, onClose }) => {
             </div>
             <button
               onClick={!selectedFile || isUploading ? null : handleFileUpload}
-              className={` ${
-                !selectedFile || isUploading ? "cursor-not-allowed	" : ""
-              } btn text-white border-none bg-primary-500 hover:bg-primary-400 mt-4 w-full`}
+              className={` ${!selectedFile || isUploading ? "cursor-not-allowed" : ""} btn text-white border-none bg-primary-500 hover:bg-primary-400 mt-4 w-full`}
             >
               {isUploading ? "Uploading..." : "Upload"}
             </button>
@@ -178,4 +191,3 @@ const UploadFileModal = ({ isOpen, onClose }) => {
 };
 
 export default UploadFileModal;
-

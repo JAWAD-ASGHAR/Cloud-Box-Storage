@@ -32,7 +32,7 @@ const Page = () => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastMode, setToastMode] = useState("");
-  const {setParentFolderId} = useContext(ParentFolderIdContext);
+  const { setParentFolderId } = useContext(ParentFolderIdContext);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -110,7 +110,11 @@ const Page = () => {
           <h2 className="text-[18px] font-bold">Starred Files</h2>
           {fileLoading ? (
             <div className="flex items-center justify-center mt-3 m-3">
-              <Loading loading={fileLoading} size="loading-md" className="w-full my-10" />
+              <Loading
+                loading={fileLoading}
+                size="loading-md"
+                className="w-full my-10"
+              />
             </div>
           ) : (
             <div>
@@ -124,15 +128,21 @@ const Page = () => {
                       <h2></h2>
                     </div>
                   </div>
-                  {fileList.map((item) => (
-                    <div key={item.id}>
-                      <FileItem
-                        file={item}
-                        loadingId={deleteLoading}
-                        delete={deleteFile}
-                      />
-                    </div>
-                  ))}
+                  {fileList
+                    .sort(
+                      (a, b) =>
+                        b.createdDate.toDate().getTime() -
+                        a.createdDate.toDate().getTime()
+                    )
+                    .map((item) => (
+                      <div key={item.id}>
+                        <FileItem
+                          file={item}
+                          loadingId={deleteLoading}
+                          delete={deleteFile}
+                        />
+                      </div>
+                    ))}
                 </div>
               ) : (
                 <p className="text-center my-10 text-gray-500">
