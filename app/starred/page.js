@@ -20,6 +20,7 @@ import Toast from "@/Components/Toast";
 import { useRouter } from "next/navigation";
 import SearchBar from "@/Components/SearchBar";
 import { ParentFolderIdContext } from "@/Context/ParentFolderIdContext";
+import Modal from "@/Components/Modal";
 
 const Page = () => {
   const db = getFirestore(app);
@@ -33,6 +34,8 @@ const Page = () => {
   const [toastMessage, setToastMessage] = useState("");
   const [toastMode, setToastMode] = useState("");
   const { setParentFolderId } = useContext(ParentFolderIdContext);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -97,13 +100,27 @@ const Page = () => {
     } finally {
       setDeleteLoading(null);
       setShowToast(true);
+      setShowModal(false);
       setTimeout(() => setShowToast(false), 3000);
     }
   };
 
+  const handleDeleteRequest = (file) => {
+    setSelectedFile(file);
+    setShowModal(true);
+  };
+
+
   return (
     <>
       {showToast && <Toast message={toastMessage} mode={toastMode} />}
+      <Modal
+        isOpen={showModal}
+        loading={deleteLoading}
+        onConfirm={() => deleteFile(selectedFile)}
+        mode={"delete"}
+        onCancel={() => setShowModal(false)}
+      />
       <div className="h-full bg-slate-100 p-5">
         <SearchBar />
         <div className="bg-white mt-5 p-5 rounded-lg">
@@ -139,7 +156,7 @@ const Page = () => {
                         <FileItem
                           file={item}
                           loadingId={deleteLoading}
-                          delete={deleteFile}
+                          delete={handleDeleteRequest}
                         />
                       </div>
                     ))}

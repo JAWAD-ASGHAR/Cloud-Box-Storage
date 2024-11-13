@@ -3,11 +3,12 @@ import Image from "next/image";
 import React, { useState, useContext, useEffect } from "react";
 import CreateFolderModal from "./folder/CreateFolderModal";
 import menuData from "@/Data/menu";
-import { redirect } from "next/navigation";
 import UploadFileModal from "./file/UploadFileModal";
 import { StorageContext } from "@/Context/StorageContext";
+import { useRouter } from "next/navigation";
 
 const SideNavBar = () => {
+  const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isFolderModalOpen, setFolderModalOpen] = useState(false);
   const [isFileModalOpen, setFileModalOpen] = useState(false);
@@ -20,24 +21,49 @@ const SideNavBar = () => {
     } else {
       setShowWarning(false);
     }
-  }, [usedStorage]);
+  }, [usedStorage]);  
+  
+  useEffect(() => {
+    const checkActiveMenuIndex = () => {
+      const currentPath = window.location.pathname;
+      const activeMenuIndex = menuData.findIndex((item) => item.path === currentPath);
+      setActiveIndex(activeMenuIndex);
+    };
 
+    // Run on initial mount and when the path changes
+    checkActiveMenuIndex();
+
+    // Optional: if you want to update the index on back/forward navigation events
+    window.addEventListener("popstate", checkActiveMenuIndex);
+
+    return () => {
+      window.removeEventListener("popstate", checkActiveMenuIndex);
+    };
+  }, [menuData]);
+  
   const handleMenuClick = (path, index) => {
     setActiveIndex(index);
-    redirect(path);
+    router.push(path);
   };
 
   return (
     <div className="w-[240px] bg-white h-screen sticky top-0 left-0 z-10 shadow-lg shadow-blue-100 p-4 border-r border-gray-200">
       {/* Logo */}
       <div className="flex items-center mb-6 pl-2 cursor-pointer">
-        <Image width={130} height={0} src="/logo.png" alt="logo" onClick={() => redirect("/")}/>
+        <Image
+          width={130}
+          height={0}
+          src="/logo.png"
+          alt="logo"
+          onClick={() => router.push("/")}
+        />
       </div>
 
       {/* Action Buttons */}
-      <button 
-      onClick={() => setFileModalOpen(true)}
-      className="flex items-center justify-between w-full bg-primary-500 text-white py-2 px-4 rounded-lg shadow transition-all duration-300 ease-in-out transform hover:bg-primary-600 mb-2">
+      <button
+        onClick={() => setFileModalOpen(true)}
+        className="flex items-center justify-between w-full bg-primary-500 text-white py-2 px-4 rounded-lg shadow transition-all duration-300 ease-in-out transform hover:bg-primary-600 mb-2"
+      >
         <span>Add New File</span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -103,9 +129,15 @@ const SideNavBar = () => {
           </div>
         ))}
       </div>
-      <UploadFileModal isOpen={isFileModalOpen} onClose={() => setFileModalOpen(false)}/>
-      <CreateFolderModal isOpen={isFolderModalOpen} onClose={() => setFolderModalOpen(false)}/>
-      
+      <UploadFileModal
+        isOpen={isFileModalOpen}
+        onClose={() => setFileModalOpen(false)}
+      />
+      <CreateFolderModal
+        isOpen={isFolderModalOpen}
+        onClose={() => setFolderModalOpen(false)}
+      />
+
       {/* Storage Warning */}
       {showWarning && (
         <div className="fixed bottom-0 left-0 right-0 z-50 p-2 bg-red-200 text-red-700 text-center rounded">
@@ -117,4 +149,3 @@ const SideNavBar = () => {
 };
 
 export default SideNavBar;
-
