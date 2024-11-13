@@ -24,9 +24,11 @@ export default function Home() {
   const [fileLoading, setFileLoading] = useState(true);
   const [fileList, setFileList] = useState([]);
   const [folderList, setFolderList] = useState([]);
-  const { parentFolderId, setParentFolderId } = useContext(ParentFolderIdContext);
+  const { parentFolderId, setParentFolderId } = useContext(
+    ParentFolderIdContext
+  );
   const { folderRefresh, setFolderRefresh } = useContext(FolderRefreshContext);
-  const {fileRefresh, setFileRefresh} = useContext(FileRefreshContext);
+  const { fileRefresh, setFileRefresh } = useContext(FileRefreshContext);
   const db = getFirestore(app);
 
   useEffect(() => {
@@ -99,22 +101,17 @@ export default function Home() {
     }
   };
 
-  if (status === "loading") {
-    return (
-      <div className="flex h-full w-full flex-col items-center space-y-2">
-        <span
-          className={`loading loading-spinner loading-lg text-primary-500`}
-        ></span>
-      </div>
-    );
-  }
-
   return (
-    <div className="h-full bg-slate-100 p-5">
-      <SearchBar />
-      <FolderList folderList={folderList} loading={folderLoading} />
-      <FileList fileList={fileList} loading={fileLoading} />
-    </div>
+    <>
+      {status === "authenticated" ? (
+        <div className="h-full bg-slate-100 p-5">
+          <SearchBar />
+          <FolderList folderList={folderList} loading={folderLoading} />
+          <FileList fileList={fileList} loading={fileLoading} />
+        </div>
+      ) : (
+        <div className="h-full w-full bg-slate-900"></div>
+      )}
+    </>
   );
 }
-

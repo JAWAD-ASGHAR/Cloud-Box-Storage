@@ -19,13 +19,7 @@ const Page = () => {
   }, [status]);
 
   if (status === "loading") {
-    return (
-      <div className="flex h-full w-full flex-col items-center space-y-2">
-        <span
-          className={`loading loading-spinner loading-lg text-primary-500`}
-        ></span>
-      </div>
-    );
+    return <div className="h-full w-full bg-slate-900"></div>;
   }
 
   return (
