@@ -175,18 +175,24 @@ const InnerFolderList = ({ folderList, folderLoading }) => {
         )}
         {folderList.length > 0 && (
           <ul className="m-3">
-            {folderList.map((folder) => (
-              <li key={folder.id}>
-                <InnerFolderItem
-                  folder={folder}
-                  modalOpen={showModal}
-                  loadingId={deleteLoading === folder.id}
-                  active={activeFolderId === folder.id}
-                  onDelete={handleDeleteRequest}
-                  handleClick={handleFolderClick}
-                />
-              </li>
-            ))}
+            {folderList
+              .sort(
+                (a, b) =>
+                  b.createdDate.toDate().getTime() -
+                  a.createdDate.toDate().getTime()
+              )
+              .map((folder) => (
+                <li key={folder.id}>
+                  <InnerFolderItem
+                    folder={folder}
+                    modalOpen={showModal}
+                    loadingId={deleteLoading === folder.id}
+                    active={activeFolderId === folder.id}
+                    onDelete={handleDeleteRequest}
+                    handleClick={handleFolderClick}
+                  />
+                </li>
+              ))}
           </ul>
         )}
       </div>

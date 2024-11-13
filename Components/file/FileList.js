@@ -59,13 +59,13 @@ function FileList({ fileList, loading }) {
   return (
     <>
       {showToast && <Toast message={toastMessage} mode={toastMode} />}
-        <Modal
-          isOpen={showModal}
-          loading={deleteLoading}
-          onConfirm={() => deleteFile(selectedFile)}
-          mode={"delete"}
-          onCancel={() => setShowModal(false)}
-        />
+      <Modal
+        isOpen={showModal}
+        loading={deleteLoading}
+        onConfirm={() => deleteFile(selectedFile)}
+        mode={"delete"}
+        onCancel={() => setShowModal(false)}
+      />
       <div className="bg-white mt-5 p-5 rounded-lg">
         <h2 className="text-[18px] font-bold">Recent Files</h2>
         {loading ? (
@@ -88,15 +88,21 @@ function FileList({ fileList, loading }) {
                     <h2></h2>
                   </div>
                 </div>
-                {fileList.map((item) => (
-                  <div key={item.id}>
-                    <FileItem
-                      file={item}
-                      loadingId={deleteLoading}
-                      delete={() => handleDeleteRequest(item)}
-                    />
-                  </div>
-                ))}
+                {fileList
+                  .sort(
+                    (a, b) =>
+                      b.createdDate.toDate().getTime() -
+                      a.createdDate.toDate().getTime()
+                  )
+                  .map((item) => (
+                    <div key={item.id}>
+                      <FileItem
+                        file={item}
+                        loadingId={deleteLoading}
+                        delete={() => handleDeleteRequest(item)}
+                      />
+                    </div>
+                  ))}
               </div>
             ) : (
               <p className="text-center my-10 text-gray-500">No files found</p>

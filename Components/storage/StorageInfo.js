@@ -13,11 +13,13 @@ import { useSession } from "next-auth/react";
 import { FaImage, FaVideo, FaFileAlt, FaFile } from "react-icons/fa"; // Import specific icons
 import { FileRefreshContext } from "@/Context/FileRefreshContext";
 import UpgradeModal from "../UpgradeModal";
+import { StorageContext } from "@/Context/StorageContext";
 
 const StorageInfo = () => {
   const db = getFirestore(app);
   const { data: session, status } = useSession();
   const { fileRefresh, setFileRefresh } = useContext(FileRefreshContext);
+  const {usedStorage, setUsedStorage} = useContext(StorageContext);
   const [totalSize, setTotalSize] = React.useState(0);
   const [modalOpen , setModalOpen] = React.useState(false);
   const [fileStats, setFileStats] = React.useState({
@@ -95,6 +97,7 @@ const StorageInfo = () => {
     });
 
     setTotalSize((totalSizeInBytes / 1024 ** 2).toFixed(2));
+    setUsedStorage(totalSizeInBytes);
     setFileStats(newFileStats);
   };
 
