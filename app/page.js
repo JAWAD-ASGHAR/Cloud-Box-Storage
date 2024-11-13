@@ -99,6 +99,16 @@ export default function Home() {
     }
   };
 
+  if (status === "loading") {
+    return (
+      <div className="flex h-full w-full flex-col items-center space-y-2">
+        <span
+          className={`loading loading-spinner loading-lg text-primary-500`}
+        ></span>
+      </div>
+    );
+  }
+
   return (
     <div className="h-full bg-slate-100 p-5">
       <SearchBar />

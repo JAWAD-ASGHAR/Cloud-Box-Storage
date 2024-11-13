@@ -3,38 +3,50 @@
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import { redirect } from "next/navigation";
-import { useState , useEffect} from "react";
+import { useState, useEffect } from "react";
 
 const Page = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [isButtonHovered, setIsButtonHovered] = useState(false);
 
-  const {data: session} = useSession();
-  
+  const { data: session, status } = useSession();
 
   useEffect(() => {
+    if (status === "loading") return;
     if (session) {
       redirect("/");
     }
-  })
+  }, [status]);
+
+  if (status === "loading") {
+    return (
+      <div className="flex h-full w-full flex-col items-center space-y-2">
+        <span
+          className={`loading loading-spinner loading-lg text-primary-500`}
+        ></span>
+      </div>
+    );
+  }
 
   return (
     <div className="relative h-screen w-full overflow-hidden">
       {/* Base gradient layer */}
       <div className="absolute inset-0 bg-gradient-to-r from-[#e0f7fa] via-[#bbdefb] to-[#d1c4e9]" />
-      
+
       {/* Overlay gradient layer with opacity transition */}
       <div
         className={`absolute inset-0 bg-gradient-to-r from-[#f58f4b] via-[#7A7CEE] to-[#cc44e7] transition-opacity duration-1000 ${
-          isHovered ? 'opacity-100' : 'opacity-0'
+          isHovered ? "opacity-100" : "opacity-0"
         }`}
       />
-      
+
       {/* Button overlay gradient layer with opacity transition */}
       <div
-        className={`absolute left-0 bottom-0 right-0 bg-black transition-all duration-500 transform ${isButtonHovered ? 'h-full' : 'h-0'}`}
+        className={`absolute left-0 bottom-0 right-0 bg-black transition-all duration-500 transform ${
+          isButtonHovered ? "h-full" : "h-0"
+        }`}
       />
-      
+
       {/* Content */}
       <div className="relative flex h-full w-full items-center justify-center">
         <div
@@ -43,12 +55,7 @@ const Page = () => {
           className="max-w-md p-8 bg-white rounded-lg shadow-xl transition-all duration-500 transform hover:shadow-2xl"
         >
           <div className="flex flex-col items-center">
-            <Image
-              width={40}
-              height={40} 
-              src="/favicon.png"
-              alt="Cloud Box"
-            />
+            <Image width={40} height={40} src="/favicon.png" alt="Cloud Box" />
             <h1 className="mt-4 text-4xl font-extrabold text-gray-800">
               Cloud Box
             </h1>
