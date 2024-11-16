@@ -57,7 +57,7 @@ const UpgradeModal = ({ isOpen, onCancel }) => {
               <FaInstagram size={30} />
             </a>
             <a
-              href="https://www.linkedin.com/in/jawad-asghar-a1290028b/"
+              href="https://www.linkedin.com/in/jawad-a-dev/"
               className="text-gray-600 hover:text-blue-600 transition-colors flex items-center"
               target="_blank"
               rel="noopener noreferrer"
