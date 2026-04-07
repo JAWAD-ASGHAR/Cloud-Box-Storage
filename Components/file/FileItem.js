@@ -1,14 +1,10 @@
 "use client";
 
-import app from "@/Config/FirebaseConfig";
-import { FileRefreshContext } from "@/Context/FileRefreshContext";
-import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
 import moment from "moment";
 import Image from "next/image";
-import react, { useContext, useState } from "react";
+import React, { useState } from "react";
 import Toast from "../Toast";
 import { IoCloudDownloadOutline } from "react-icons/io5";
-import { supabase } from "@/Config/supabaseClient";
 
 const iconsArray = ["doc", "jpg", "mp4", "pdf", "png", "pptx"];
 
@@ -16,93 +12,22 @@ function FileItem({ file, loadingId, delete: deleteFile }) {
   const image = "/" + file.type + ".png";
   const deleteLoading = loadingId === file.id;
   const [starLoading, setStarLoading] = useState(false);
-  const { fileRefresh, setFileRefresh } = useContext(FileRefreshContext);
   const [toastMessage, setToastMessage] = useState("");
   const [toastMode, setToastMode] = useState("");
   const [activeToast, setActiveToast] = useState(false);
 
-  const handleDownload = async (file) => {
-    if (deleteLoading) {
-      return;
-    }
-    
-    if (!file.id) {
-      setToastMessage("File ID is missing!");
-      setToastMode("error");
-      setActiveToast(true);
-      setTimeout(() => setActiveToast(false), 3000);
-      return;
-    }
-
-    try {
-      const { data, error } = await supabase.storage
-        .from("Cloud App Uploads")
-        .download(`public/${file.imageName}`);
-
-      if (error) {
-        console.error("Supabase download error:", error);
-        throw error;
-      }
-      
-      const blob = new Blob([data]);
-      const url = window.URL.createObjectURL(blob);
-
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = file.name;
-      document.body.appendChild(link);
-      link.click();
-
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(link);
-
-      setToastMessage("Download started successfully!");
-      setToastMode("success");
-      setActiveToast(true);
-      setTimeout(() => setActiveToast(false), 3000);
-      
-    } catch (error) {
-      setToastMessage("An error occurred while downloading the file.");
-      setToastMode("error");
-      setActiveToast(true);
-      setTimeout(() => setActiveToast(false), 3000);
-    }
-  };
-
-  const toggleStar = async (file) => {
-    if (deleteLoading) return;
-    if (!file.id) {
-      setToastMessage("File ID is missing!");
-      setToastMode("error");
-      setActiveToast(true);
-      setTimeout(() => setActiveToast(false), 3000);
-      return;
-    }
-    setStarLoading(true);
-    const db = getFirestore(app);
-    const fileRef = doc(db, "files", file.id);
-    try {
-      const fileSnapshot = await getDoc(fileRef);
-      if (fileSnapshot.exists()) {
-        await setDoc(
-          fileRef,
-          { isStarred: !fileSnapshot.data().isStarred },
-          { merge: true }
-        );
-        setFileRefresh(!fileRefresh);
-        setToastMessage("Star status toggled successfully!");
-        setToastMode("success");
-      } else {
-        setToastMessage("File does not exist!");
-        setToastMode("error");
-      }
-    } catch {
-      setToastMessage("An error occurred while toggling star status.");
-      setToastMode("error");
-    }
+  const handleDownload = () => {
+    setToastMessage("Download started (Mock)");
+    setToastMode("success");
     setActiveToast(true);
     setTimeout(() => setActiveToast(false), 3000);
-    setStarLoading(false);
+  };
+
+  const toggleStar = () => {
+    setToastMessage("Star status toggled (Mock)");
+    setToastMode("success");
+    setActiveToast(true);
+    setTimeout(() => setActiveToast(false), 3000);
   };
 
   return (

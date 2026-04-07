@@ -1,40 +1,18 @@
 "use client";
 
-import app from "@/Config/FirebaseConfig";
-import {
-  collection,
-  getDocs,
-  getFirestore,
-  query,
-  where,
-} from "firebase/firestore";
-import React, { useEffect, useContext } from "react";
-import { useSession } from "next-auth/react";
-import { FaImage, FaVideo, FaFileAlt, FaFile } from "react-icons/fa"; // Import specific icons
-import { FileRefreshContext } from "@/Context/FileRefreshContext";
-import UpgradeModal from "../UpgradeModal";
-import { StorageContext } from "@/Context/StorageContext";
+import React, { useState } from "react";
+import { FaImage, FaVideo, FaFileAlt, FaFile } from "react-icons/fa";
 
 const StorageInfo = () => {
-  const db = getFirestore(app);
-  const { data: session, status } = useSession();
-  const { fileRefresh, setFileRefresh } = useContext(FileRefreshContext);
-  const {usedStorage, setUsedStorage} = useContext(StorageContext);
-  const [totalSize, setTotalSize] = React.useState(0);
-  const [modalOpen , setModalOpen] = React.useState(false);
-  const [fileStats, setFileStats] = React.useState({
-    Images: { size: 0, count: 0 },
-    Videos: { size: 0, count: 0 },
-    Documents: { size: 0, count: 0 },
-    Others: { size: 0, count: 0 },
-  });
-  const totalStorageLimit = 50 * 1024 * 1024; // 50 MB in bytes
+  const [totalSize, setTotalSize] = useState(12.5);
+  const totalStorageLimit = 50; // MB
 
-  useEffect(() => {
-    if (status === "authenticated") {
-      getAllFiles();
-    }
-  }, [session, fileRefresh]);
+  const [fileStats, setFileStats] = useState({
+    Images: { size: 5.2, count: 12 },
+    Videos: { size: 3.8, count: 5 },
+    Documents: { size: 2.1, count: 8 },
+    Others: { size: 1.4, count: 3 },
+  });
 
   const categories = [
     { label: "Images", icon: <FaImage size={24} />, bgColor: "bg-green-100", iconColor: "text-green-500" },
@@ -43,72 +21,12 @@ const StorageInfo = () => {
     { label: "Others", icon: <FaFile size={24} />, bgColor: "bg-red-100", iconColor: "text-red-500" },
   ];
 
-  const getAllFiles = async () => {
-    let totalSizeInBytes = 0;
-    const newFileStats = {
-      Images: { size: 0, count: 0 },
-      Videos: { size: 0, count: 0 },
-      Documents: { size: 0, count: 0 },
-      Others: { size: 0, count: 0 },
-    };
-
-    const q = query(
-      collection(db, "files"),
-      where("createdBy", "==", session?.user?.email)
-    );
-    const querySnapshot = await getDocs(q);
-
-    querySnapshot.forEach((doc) => {
-      const fileSize = doc.data()["size"];
-      const fileType = doc.data()["type"];
-
-      totalSizeInBytes += fileSize;
-
-      // Categorize files based on type
-      if (
-        fileType.endsWith("png") ||
-        fileType.endsWith("jpg") ||
-        fileType.endsWith("jpeg") ||
-        fileType.endsWith("gif") ||
-        fileType.endsWith("bmp")
-      ) {
-        newFileStats.Images.size += fileSize;
-        newFileStats.Images.count += 1;
-      } else if (
-        fileType.endsWith("mp4") ||
-        fileType.endsWith("mov") ||
-        fileType.endsWith("avi") ||
-        fileType.endsWith("wmv")
-      ) {
-        newFileStats.Videos.size += fileSize;
-        newFileStats.Videos.count += 1;
-      } else if (
-        fileType.endsWith("pdf") ||
-        fileType.endsWith("docx") ||
-        fileType.endsWith("doc") ||
-        fileType.endsWith("txt")
-      ) {
-        newFileStats.Documents.size += fileSize;
-        newFileStats.Documents.count += 1;
-      } else {
-        newFileStats.Others.size += fileSize;
-        newFileStats.Others.count += 1;
-      }
-    });
-
-    setTotalSize((totalSizeInBytes / 1024 ** 2).toFixed(2));
-    setUsedStorage(totalSizeInBytes);
-    setFileStats(newFileStats);
-  };
-
   const calculateProgress = (size) => {
     return (size / totalStorageLimit) * 100;
   };
 
   return (
     <div>
-      <UpgradeModal isOpen={modalOpen} onCancel={() => setModalOpen(false)} />
-      {/* Storage Progress Section */}
       <h2 className="text-[22px] font-bold mb-2 mt-8">
         {totalSize} MB <span className="text-[14px] font-medium text-gray-400">used of</span> 50 MB
       </h2>
@@ -131,7 +49,6 @@ const StorageInfo = () => {
         ></div>
       </div>
 
-      {/* Categories Section */}
       <div className="space-y-4 border-b border-gray-200 mt-4 mb-4">
         {categories.map((category, index) => (
           <div key={index} className="flex justify-between items-center border-b border-gray-200 pb-4 last:border-b-0">
@@ -145,17 +62,16 @@ const StorageInfo = () => {
               </div>
             </div>
             <p className="font-semibold">
-              {(fileStats[category.label]?.size / 1024 ** 2).toFixed(2) || 0} MB
+              {fileStats[category.label]?.size || 0} MB
             </p>
           </div>
         ))}
       </div>
 
-      {/* Upgrade Plan Section */}
       <div className="mt-6 flex flex-col items-center bg-gray-100 p-5 rounded-lg">
         <p className="text-gray-800 font-semibold">Need More Space?</p>
         <p className="text-gray-600 text-sm">Get more space by upgrading the plan</p>
-        <button onClick={() => setModalOpen(true)} className="bg-primary-500 text-white mt-3 p-2 rounded-lg transition-all ease-in-out duration-300 hover:bg-primary-600 font flex items-center justify-center">
+        <button className="bg-primary-500 text-white mt-3 p-2 rounded-lg transition-all ease-in-out duration-300 hover:bg-primary-600 font flex items-center justify-center">
           Upgrade Plan
         </button>
       </div>

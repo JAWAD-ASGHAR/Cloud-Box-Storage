@@ -1,28 +1,13 @@
 "use client"
 
-import { ParentFolderIdContext } from "@/Context/ParentFolderIdContext";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import React, { useContext, useEffect } from "react";
+import React from "react";
 
 const NotFound = () => {
-
-  const { status } = useSession();
-  const router = useRouter();
-  const {setParentFolderId} = useContext(ParentFolderIdContext);
-
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-    }
-    setParentFolderId(0);
-  }, [status]);
-
   return (
     <div className="flex h-screen bg-slate-100 items-center justify-center">
       <div className="text-center">
-        <h1 className="text-6xl font-bold">404</h1>
-        <p className="text-2xl">Page not found</p>
+        <h1 className="text-6xl font-bold text-primary-500">404</h1>
+        <p className="text-2xl mt-4">Page not found</p>
         <div className="mt-10">
           <a
             href="/"

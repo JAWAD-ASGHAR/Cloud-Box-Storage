@@ -1,10 +1,5 @@
-import app from "@/Config/FirebaseConfig";
-import React, { useContext, useState } from "react";
-import { doc, getFirestore, setDoc } from "firebase/firestore";
-import { useSession } from "next-auth/react";
+import React, { useState } from "react";
 import Toast from "../Toast";
-import { ParentFolderIdContext } from "@/Context/ParentFolderIdContext";
-import { FolderRefreshContext } from "@/Context/FolderRefreshContext";
 
 const CreateFolderModal = ({ isOpen, onClose }) => {
   const [folderName, setFolderName] = useState("");
@@ -12,12 +7,6 @@ const CreateFolderModal = ({ isOpen, onClose }) => {
   const [toastMessage, setToastMessage] = useState("");
   const [toastMode, setToastMode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { parentFolderId, setParentFolderId } = useContext(
-    ParentFolderIdContext
-  );
-  const docId = Date.now().toString();
-  const { data: session } = useSession();
-  const { folderRefresh, setFolderRefresh } = useContext(FolderRefreshContext);
 
   const handleClose = () => {
     if(isLoading) return
@@ -31,39 +20,21 @@ const CreateFolderModal = ({ isOpen, onClose }) => {
       return;
     }
     setIsLoading(true);
-    await setDoc(doc(db, "folders", docId), {
-      name: folderName,
-      id: docId,
-      createdBy: session.user.email,
-      createdDate: new Date(),
-      parentFolderId: parentFolderId,
-    })
-      .then(() => {
-        setToastMessage("Folder created successfully!");
+    setTimeout(() => {
+        setToastMessage("Folder created successfully! (Mock)");
         setToastMode("success");
         setShowToast(true);
-        setTimeout(() => setShowToast(false), 3000);
-      })
-      .catch((error) => {
-        setToastMessage("Error creating Folder!");
-        setToastMode("error");
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 3000);
-      })
-      .finally(() => {
         setIsLoading(false);
-        setFolderRefresh(!folderRefresh);
         setFolderName("");
-        handleClose();
-      });
+        onClose();
+        setTimeout(() => setShowToast(false), 3000);
+    }, 1000);
   };
-
-  const db = getFirestore(app);
 
   return (
     <>
       {showToast && (
-        <Toast message="Folder created successfully!" mode={toastMode} />
+        <Toast message={toastMessage} mode={toastMode} />
       )}
       <div className={`modal backdrop-blur-md z-30 ${isOpen ? "modal-open" : ""}`} onClick={handleClose}>
         <div

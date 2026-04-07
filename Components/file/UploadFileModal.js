@@ -1,27 +1,15 @@
-import { ParentFolderIdContext } from "@/Context/ParentFolderIdContext";
-import { doc, getFirestore, setDoc } from "firebase/firestore";
-import { useSession } from "next-auth/react";
-import React, { useContext, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import Toast from "../Toast";
-import app from "@/Config/FirebaseConfig";
-import { FileRefreshContext } from "@/Context/FileRefreshContext";
-import { StorageContext } from "@/Context/StorageContext";
 
 const MAX_FILE_SIZE = 1024 * 1024 * 10; // 10MB
 
 const UploadFileModal = ({ isOpen, onClose }) => {
-  const { data: session } = useSession();
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastMode, setToastMode] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
-  const { parentFolderId } = useContext(ParentFolderIdContext);
-  const { fileRefresh, setFileRefresh } = useContext(FileRefreshContext);
-  const { usedStorage, setUsedStorage } = useContext(StorageContext);
-  const db = getFirestore(app);
-  const docId = Date.now().toString();
-  const fileInputRef = useRef(null); // Reference for the file input
+  const fileInputRef = useRef(null);
 
   const handleFileSelect = (e) => {
     setSelectedFile(null);
@@ -29,14 +17,6 @@ const UploadFileModal = ({ isOpen, onClose }) => {
     if (file) {
       if (file.size > MAX_FILE_SIZE) {
         setToastMessage(`File size exceeded the maximum limit of ${MAX_FILE_SIZE / (1024 * 1024)}MB!`);
-        setToastMode("error");
-        setSelectedFile(null);
-        onClose();
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 3000);
-        return;
-      } else if (usedStorage + file.size > 50 * 1024 * 1024) {
-        setToastMessage(`Storage limit exceeded!`);
         setToastMode("error");
         setSelectedFile(null);
         onClose();
@@ -60,54 +40,16 @@ const UploadFileModal = ({ isOpen, onClose }) => {
     if (!selectedFile) return;
     setIsUploading(true);
 
-    try {
-      const formData = new FormData();
-      formData.append("file", selectedFile);
-      formData.append("fileName", selectedFile.name);
-
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!res.ok) {
-        const error = await res.json();
-        setToastMessage(`Upload error: ${error.error}`);
-        setToastMode("error");
-        setShowToast(true);
-        return;
-      }
-
-      const data = await res.json();
-
-      await setDoc(doc(db, "files", docId), {
-        name: selectedFile.name,
-        type: selectedFile.name.split(".").pop(),
-        size: selectedFile.size,
-        modifiedAt: selectedFile.lastModified,
-        id: docId,
-        createdBy: session.user.email,
-        createdDate: new Date(),
-        parentFolderId,
-        imageUrl: data.url,
-        imageName: data.name,
-        isStarred: false,
-      });
-
-      setFileRefresh(!fileRefresh);
-      setToastMessage("File uploaded and saved successfully!");
+    setTimeout(() => {
+      setToastMessage("File uploaded successfully! (Mock)");
       setToastMode("success");
-      closeModal();
-    } catch (error) {
-      setToastMessage("Unexpected error occurred while uploading file!");
-      setToastMode("error");
-    } finally {
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
       setIsUploading(false);
-      setSelectedFile(null); // Reset selected file after upload
-      if (fileInputRef.current) fileInputRef.current.value = null; // Clear file input
-    }
+      setSelectedFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = null;
+      onClose();
+    }, 1500);
   };
 
   return (
